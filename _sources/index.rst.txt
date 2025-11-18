@@ -1,0 +1,11 @@
+docs_teste documentation
+========================
+
+Bem-vindo à documentação!
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Conteúdo
+
+   teste
+
