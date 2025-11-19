@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="1. Introdução" href="01-introducao.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="5. Integração do Back-End com a API Interna" href="05-backend-api-interna.html"><link rel="prev" title="3. Estrutura do Front-End" href="03-estrutura-do-frontend.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>docs_teste documentation</title>
+        <title>4. Estrutura do Back-End - docs_teste documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">docs_teste  documentation</div></a>
+      <a href="index.html"><div class="brand">docs_teste  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -172,7 +172,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -180,7 +180,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   <span class="sidebar-brand-text">docs_teste  documentation</span>
   
@@ -191,11 +191,11 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="01-introducao.html">1. Introdução</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02-arquitetura-geral.html">2. Arquitetura Geral</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03-estrutura-do-frontend.html">3. Estrutura do Front-End</a></li>
-<li class="toctree-l1"><a class="reference internal" href="04-estrutura-do-backend.html">4. Estrutura do Back-End</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">4. Estrutura do Back-End</a></li>
 <li class="toctree-l1"><a class="reference internal" href="05-backend-api-interna.html">5. Integração do Back-End com a API Interna</a></li>
 </ul>
 
@@ -217,7 +217,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/index.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/04-estrutura-do-backend.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -230,60 +230,192 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="docs-teste-documentation">
-<h1>docs_teste documentation<a class="headerlink" href="#docs-teste-documentation" title="Link to this heading">¶</a></h1>
-<p>Bem-vindo à documentação!</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+          <section id="estrutura-do-back-end">
+<h1>4. Estrutura do Back-End<a class="headerlink" href="#estrutura-do-back-end" title="Link to this heading">¶</a></h1>
+<section id="explicacao-nao-tecnica">
+<h2>6.1 Explicação não técnica<a class="headerlink" href="#explicacao-nao-tecnica" title="Link to this heading">¶</a></h2>
+<p>O backend é a <strong>“parte invisível” do sistema</strong>, que roda no servidor e:</p>
+<ul class="simple">
+<li><p>Recebe os pedidos vindos do front-end (por exemplo: “listar itens”, “salvar formulário”).</p></li>
+<li><p>Confere se o usuário <strong>pode</strong> fazer aquela ação (permissões, login, regras).</p></li>
+<li><p>Conversa com:</p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="01-introducao.html">1. Introdução</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="01-introducao.html#explicacao-simples">1.1 Explicação simples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01-introducao.html#explicacao-intermediaria">1.2 Explicação intermediária</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01-introducao.html#explicacao-tecnica">1.3 Explicação técnica</a></li>
+<li><p>o <strong>banco interno</strong> (dados próprios do sistema),</p></li>
+<li><p>o <strong>sistema local/externo</strong> (API Local + DB Externo),</p></li>
+<li><p>e o <strong>cache</strong> (para responder mais rápido).</p></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="02-arquitetura-geral.html">2. Arquitetura Geral</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#visao-geral">3.1 Visão Geral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#diagrama-geral">3.2 Diagrama Geral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#diagramas-menores-complementares">3.3 Diagramas Menores Complementares</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#sequence-diagram">3.4 Sequence Diagram</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#resumo-tecnico-do-fluxo">3.5 Resumo Técnico do Fluxo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#decisoes-arquiteturais-essenciais">3.6 Decisões Arquiteturais Essenciais</a></li>
+<li><p>Junta todas essas informações, aplica as regras de negócio e devolve uma <strong>resposta única e limpa</strong> para o front-end, sempre passando pela <strong>API interna</strong>, nunca expondo diretamente o sistema externo.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="03-estrutura-do-frontend.html">3. Estrutura do Front-End</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#visao-geral">5.1 Visão Geral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#camadas-principais-do-front-end">5.2 Camadas Principais do Front-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#organizacao-de-pastas">5.3 Organização de Pastas</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#fluxo-de-renderizacao-e-dados-no-front-end">5.4 Fluxo de Renderização e Dados no Front-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#decisoes-de-front-end">5.5 Decisões de Front-End</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="04-estrutura-do-backend.html">4. Estrutura do Back-End</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#explicacao-nao-tecnica">6.1 Explicação não técnica</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#logica-de-funcionamento-do-back-end">6.2 Lógica de Funcionamento do Back-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#arquitetura-interna-e-servicos-do-back-end">6.3 Arquitetura Interna e Serviços do Back-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#camada-de-dominio">Camada de Domínio</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#infraestrutura">Infraestrutura</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#estrutura-de-codigo-do-back-end-exemplo">6.4 Estrutura de Código do Back-End (Exemplo)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#ideias-chave-dessa-estrutura">Ideias-chave dessa estrutura:</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="05-backend-api-interna.html">5. Integração do Back-End com a API Interna</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#explicacao-nao-tecnica">7.1 Explicação não técnica</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#fluxo-de-requisicao-via-api-interna">7.2 Fluxo de Requisição via API Interna</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#contratos-e-padroes-da-api-interna">7.3 Contratos e Padrões da API Interna</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#seguranca-e-autenticacao-na-api-interna">7.4 Segurança e Autenticação na API Interna</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#decisoes-essenciais-de-integracao">7.5 Decisões Essenciais de Integração</a></li>
-</ul>
-</li>
-</ul>
+<p>Em resumo: o backend é o <strong>porteiro + recepcionista + analista</strong> entre o front-end e os dados/sistemas internos/externos.</p>
+</section>
+<hr class="docutils" />
+<section id="logica-de-funcionamento-do-back-end">
+<h2>6.2 Lógica de Funcionamento do Back-End<a class="headerlink" href="#logica-de-funcionamento-do-back-end" title="Link to this heading">¶</a></h2>
+<p>O fluxo abaixo mostra, de forma simplificada, como uma requisição percorre o backend:</p>
+<pre  class="mermaid">
+        flowchart LR
+    FE[&quot;🌐 Frontend&quot;] --&gt; API[&quot;🔧 API Interna&quot;]
+    API --&gt; MW[&quot;🧱 (logs, validação, auth)&quot;]
+    MW --&gt; UC[&quot;🧠 Serviços / Casos de Uso&quot;]
+    
+    UC --&gt; Cache((&quot;⚡ Cache&quot;))
+    UC --&gt; DBI((&quot;🗄️ DB Interno&quot;))
+    UC --&gt; Bridge[&quot;🔗 (API Externa)&quot;]
+    
+    Bridge --&gt; LocalAPI[&quot;🧩 API Local&quot;]
+    LocalAPI --&gt; DBE((&quot;🗄️ DB Externo&quot;))
+
+    DBI --&gt; UC
+    Cache --&gt; UC
+    DBE --&gt; LocalAPI
+    LocalAPI --&gt; Bridge
+    UC --&gt; API
+    API --&gt; FE
+
+%% Estilos padronizados (iguais aos diagramas da Arquitetura Geral)
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+class FE frontend;
+class API,MW,UC,Bridge,LocalAPI backend;
+class DBI,DBE db;
+class Cache cache;
+    </pre><p>Passo a passo em linguagem simples:</p>
+<p>O frontend chama a API Interna com uma requisição HTTP (GET/POST etc.).</p>
+<p>A requisição passa por middlewares (logs, validação, autenticação, autorização).</p>
+<p>A lógica principal é executada em Serviços/Casos de Uso:</p>
+<p>decide se precisa do banco interno, da API externa e/ou do cache;</p>
+<p>aplica regras de negócio (ex.: “se o usuário for administrador, mostra X”).</p>
+<p>Se precisar de dados externos, o caso de uso chama o DataBridge, que fala com a API Local e o DB Externo.</p>
+<p>O que vier da API Local + DB Externo e do DB Interno é transformado e unificado.</p>
+<p>A resposta final (já sem detalhes internos) volta pela API Interna → Frontend, em formato JSON.</p>
+</section>
+<section id="arquitetura-interna-e-servicos-do-back-end">
+<h2>6.3 Arquitetura Interna e Serviços do Back-End<a class="headerlink" href="#arquitetura-interna-e-servicos-do-back-end" title="Link to this heading">¶</a></h2>
+<p>Abaixo está a visão em camadas de como o backend é organizado internamente:</p>
+<pre  class="mermaid">
+        graph TD
+
+subgraph HTTP[&quot;Camada HTTP&quot;]
+    Routes[&quot;🛣️ Rotas (Express)&quot;]
+    Controllers[&quot;🎛️ Controllers&quot;]
+    Middlewares[&quot;🧱 M(auth, logs, validação)&quot;]
+end
+
+subgraph Domain[&quot;Camada de Domínio&quot;]
+    Services[&quot;🧠 Serviços / Casos de Uso&quot;]
+    Validators[&quot;✔️ Validadores / Regras&quot;]
+end
+
+subgraph Infra[&quot;Infraestrutura&quot;]
+    Repos[&quot;📂 Repositórios&quot;]
+    ExtClients[&quot;🔗 Clientes Externos&quot;]
+    CacheProv[&quot;⚡ Cache Provider&quot;]
+    Logger[&quot;📜 Logger&quot;]
+    Config[&quot;⚙️ Config / Env&quot;]
+end
+
+DBI[(&quot;🗄️ DB Interno&quot;)]
+DBE[(&quot;🗄️ DB Externo&quot;)]
+LocalAPI[&quot;🧩 API Local&quot;]
+
+Routes --&gt; Controllers
+Controllers --&gt; Middlewares
+Middlewares --&gt; Services
+
+Services --&gt; Validators
+Services --&gt; Repos
+Services --&gt; ExtClients
+Services --&gt; CacheProv
+
+Repos --&gt; DBI
+ExtClients --&gt; LocalAPI
+LocalAPI --&gt; DBE
+
+%% Estilos padronizados
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+
+class Routes,Controllers,Middlewares,Services,Validators,Repos,ExtClients,CacheProv,Logger,Config backend;
+class LocalAPI external;
+class DBI,DBE db;
+    </pre></section>
+<section id="camada-de-dominio">
+<h2>Camada de Domínio<a class="headerlink" href="#camada-de-dominio" title="Link to this heading">¶</a></h2>
+<p>Serviços / Casos de Uso: contêm a regra de negócio (ex.: “criar pedido”, “sincronizar dados externos”).</p>
+<p>Validadores / Regras: encapsulam regras específicas (ex.: validação de estado, limites, consistência).</p>
+</section>
+<section id="infraestrutura">
+<h2>Infraestrutura<a class="headerlink" href="#infraestrutura" title="Link to this heading">¶</a></h2>
+<p>Repositórios: abstraem acesso ao DB Interno (queries, ORMs, etc.).</p>
+<p>Clientes Externos (DataBridge, API Local): encapsulam requisições à API Local e, por consequência, ao DB Externo.</p>
+<p>Cache Provider: cuida de leitura/escrita no cache (ex.: Redis ou similar).</p>
+<p>Logger: centraliza logs estruturados e erros.</p>
+<p>Config / Env: centraliza variáveis de ambiente, URLs, chaves, credenciais (sem espalhar process.env pelo código).</p>
+</section>
+<section id="estrutura-de-codigo-do-back-end-exemplo">
+<h2>6.4 Estrutura de Código do Back-End (Exemplo)<a class="headerlink" href="#estrutura-de-codigo-do-back-end-exemplo" title="Link to this heading">¶</a></h2>
+<p>Abaixo, um modelo de organização de pastas alinhado à arquitetura acima (ajuste conforme sua stack real):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>backend/
+src/
+server.ts              # bootstrap do servidor HTTP (Express)
+config/                # configs, env, mapeamento de variáveis
+  env.ts
+  logger.ts
+modules/
+  auth/
+    http/
+      controllers/
+      routes.ts
+      middlewares/
+    services/
+    repositories/
+    dtos/
+  sync/
+    http/
+      controllers/
+      routes.ts
+    services/
+      SyncExternalDataService.ts
+    repositories/
+      InternalDataRepository.ts
+    external/
+      LocalApiClient.ts   # DataBridge p/ API Local
+  shared/
+    errors/
+    utils/
+infra/
+  http/
+    app.ts              # instancia Express, aplica middlewares globais
+  db/
+    prisma/             # ou sequelize/typeorm/query builder
+  cache/
+    redisClient.ts
+  external/
+httpClient.ts       # wrapper HTTP (axios/fetch) comum
+</pre></div>
 </div>
+</section>
+<section id="ideias-chave-dessa-estrutura">
+<h2>Ideias-chave dessa estrutura:<a class="headerlink" href="#ideias-chave-dessa-estrutura" title="Link to this heading">¶</a></h2>
+<p>Cada módulo de domínio (auth, sync, etc.) agrupa seu próprio http/, services/, repositories/ etc.</p>
+<p>A infra concentra detalhes tecnológicos (Express, ORM, Redis, HTTP client).</p>
+<p>A camada de domínio (services, regras) não “conhece” detalhes de infraestrutura, apenas interfaces (repos, clients).</p>
+</section>
 </section>
 
         </article>
@@ -291,16 +423,26 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="01-introducao.html">
+          <a class="next-page" href="05-backend-api-interna.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">1. Introdução</div>
+                <div class="title">5. Integração do Back-End com a API Interna</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          
+          <a class="prev-page" href="03-estrutura-do-frontend.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">3. Estrutura do Front-End</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -319,8 +461,33 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">4. Estrutura do Back-End</a><ul>
+<li><a class="reference internal" href="#explicacao-nao-tecnica">6.1 Explicação não técnica</a></li>
+<li><a class="reference internal" href="#logica-de-funcionamento-do-back-end">6.2 Lógica de Funcionamento do Back-End</a></li>
+<li><a class="reference internal" href="#arquitetura-interna-e-servicos-do-back-end">6.3 Arquitetura Interna e Serviços do Back-End</a></li>
+<li><a class="reference internal" href="#camada-de-dominio">Camada de Domínio</a></li>
+<li><a class="reference internal" href="#infraestrutura">Infraestrutura</a></li>
+<li><a class="reference internal" href="#estrutura-de-codigo-do-back-end-exemplo">6.4 Estrutura de Código do Back-End (Exemplo)</a></li>
+<li><a class="reference internal" href="#ideias-chave-dessa-estrutura">Ideias-chave dessa estrutura:</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -329,5 +496,13 @@
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     </body>
 </html>

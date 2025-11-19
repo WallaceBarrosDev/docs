@@ -1,0 +1,102 @@
+# 1. Introdução
+
+## 1.1 Explicação simples
+
+Este sistema foi criado para **conectar uma aplicação web moderna** (usada por pessoas no navegador) com um **sistema já existente** que roda em ambiente local.
+
+Você pode imaginar assim:
+
+- A pessoa acessa o sistema pelo navegador.
+- Ela vê uma **interface limpa**, com telas organizadas e fáceis de entender.
+- Quando ela clica em algo (por exemplo, “buscar dados” ou “salvar informações”),
+  o sistema conversa com um **servidor** que:
+  - valida o que foi pedido,
+  - busca ou grava dados em bancos internos,
+  - fala com o sistema local/legado quando necessário,
+  - e devolve uma resposta pronta para exibir na tela.
+
+Para quem usa, a experiência é de um sistema **simples, rápido e confiável**, sem precisar saber nada sobre a complexidade “por trás das cortinas”.
+
+---
+
+## 1.2 Explicação intermediária
+
+Em um nível um pouco mais detalhado, o sistema é composto por três grandes partes:
+
+1. **Frontend (aplicação web)**  
+   - Uma aplicação web feita em **React + TypeScript**.
+   - Funciona como uma **SPA (Single Page Application)**.
+   - É responsável por:
+     - mostrar as telas,
+     - tratar interações do usuário,
+     - chamar a **API Interna** para buscar ou enviar dados.
+
+2. **Backend / API Interna**
+   - Uma **API HTTP** (Node/Express) que recebe as requisições do frontend.
+   - Centraliza:
+     - regras de negócio,
+     - autenticação e autorização,
+     - validações,
+     - integração com bancos de dados e sistemas externos.
+   - Devolve respostas em **JSON**, sempre em um formato previsível.
+
+3. **Sistema Local / Externo**
+   - Um sistema já existente (legado), acessado por meio de uma **API Local**.
+   - Essa API, por sua vez, conversa com um **banco de dados externo**.
+   - O backend nunca expõe diretamente essa API Local para o frontend:
+     - toda comunicação passa pela **API Interna**, que atua como camada de proteção e tradução.
+
+Além disso, há componentes importantes de suporte:
+
+- **Banco de dados interno**: usado para dados próprios do novo sistema.
+- **Cache**: ajuda a melhorar desempenho, evitando chamadas repetidas ao sistema legado.
+- **Mecanismos de log e monitoramento**: para rastrear requisições, erros e performance.
+
+Em resumo: o frontend fala **somente** com a API Interna, que fala com o que for necessário (banco interno, sistema local/externo, cache), sempre aplicando regras e validações.
+
+---
+
+## 1.3 Explicação técnica
+
+Do ponto de vista técnico, a solução é organizada em camadas bem definidas, com foco em **segurança, modularidade e manutenção a longo prazo**.
+
+**Principais características técnicas:**
+
+- **Frontend**
+  - SPA em **React + TypeScript**.
+  - Organização em:
+    - **camada de roteamento** (rotas, layouts),
+    - **páginas** (containers de alto nível),
+    - **módulos de funcionalidade** (por domínio),
+    - **componentes compartilhados**, **hooks** e um **API Client** único.
+  - Toda comunicação com o backend é feita via **HTTP/JSON**, através desse API Client.
+
+- **Backend / API Interna**
+  - Implementado em **Node.js com Express** (ou framework equivalente).
+  - Camadas típicas:
+    - **HTTP**: rotas, controllers, middlewares (auth, logs, validação).
+    - **Domínio**: serviços/casos de uso, regras e validadores.
+    - **Infraestrutura**:
+      - repositórios para o **DB Interno**,
+      - clientes externos (DataBridge / API Local),
+      - provedor de cache,
+      - logging e configuração.
+  - A API Interna é responsável por:
+    - definir **contratos claros** (URLs, payloads, respostas),
+    - **orquestrar** acesso a DB interno, sistema local e cache,
+    - expor um modelo de dados **limpo** para o frontend, independente de detalhes do legado.
+
+- **Integração com Sistema Local**
+  - Realizada via um componente de integração (ex.: **DataBridge** / clientes externos).
+  - Esse componente:
+    - encapsula regras específicas da **API Local**,
+    - converte formatos de dados legados para o modelo interno,
+    - trata erros e timeouts de forma padronizada.
+  - O banco externo é acessado **indiretamente**, sempre através da API Local.
+
+- **Qualidades arquiteturais**
+  - 🔐 **Segurança**: o frontend nunca acessa diretamente o sistema externo; tokens e credenciais sensíveis ficam apenas no backend.
+  - 🔄 **Desacoplamento**: mudanças no legado impactam, principalmente, a camada de integração, e não o restante da aplicação.
+  - 🧱 **Modularidade**: funcionalidades agrupadas por domínio tanto no frontend quanto no backend.
+  - 📈 **Observabilidade**: logs estruturados, correlação de requisições e possibilidade de métricas centralizadas.
+  - 📘 **Documentação viva**: descrita em **Markdown + Mermaid**, permitindo diagramas versionados junto com o código.

@@ -2,10 +2,12 @@
 <html class="no-js" lang="pt-br" data-content_root="./">
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#"><link rel="search" title="Search" href="search.html">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="4. Estrutura do Back-End" href="04-estrutura-do-backend.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 --><title>Index - docs_teste documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+        <title>5. Integração do Back-End com a API Interna - docs_teste documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -170,7 +172,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -189,12 +191,12 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="01-introducao.html">1. Introdução</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02-arquitetura-geral.html">2. Arquitetura Geral</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03-estrutura-do-frontend.html">3. Estrutura do Front-End</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04-estrutura-do-backend.html">4. Estrutura do Back-End</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05-backend-api-interna.html">5. Integração do Back-End com a API Interna</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">5. Integração do Back-End com a API Interna</a></li>
 </ul>
 
 </div>
@@ -214,7 +216,13 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/05-backend-api-interna.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
@@ -222,15 +230,150 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"></div>
+          <section id="integracao-do-back-end-com-a-api-interna">
+<h1>5. Integração do Back-End com a API Interna<a class="headerlink" href="#integracao-do-back-end-com-a-api-interna" title="Link to this heading">¶</a></h1>
+<section id="explicacao-nao-tecnica">
+<h2>7.1 Explicação não técnica<a class="headerlink" href="#explicacao-nao-tecnica" title="Link to this heading">¶</a></h2>
+<p>A <strong>API Interna</strong> é a “porta oficial” pela qual o front-end conversa com o backend.<br />
+Ela:</p>
+<ul class="simple">
+<li><p>Recebe as requisições do front-end (ex.: listar dados, salvar formulário).</p></li>
+<li><p>Garante que <strong>todas</strong> as regras de segurança e validação sejam aplicadas.</p></li>
+<li><p>Encaminha o pedido para a <strong>lógica de negócio</strong> correta (serviços/casos de uso).</p></li>
+<li><p>Junta dados do <strong>banco interno</strong>, do <strong>sistema local/externo</strong> e do <strong>cache</strong>.</p></li>
+<li><p>Devolve uma <strong>resposta padronizada em JSON</strong>, simples de consumir pelo front-end.</p></li>
+</ul>
+<p>Para o front-end, a API Interna é um <strong>ponto único e estável</strong>: ele não precisa conhecer detalhes de banco, APIs locais, formatos legados, etc.</p>
+</section>
+<hr class="docutils" />
+<section id="fluxo-de-requisicao-via-api-interna">
+<h2>7.2 Fluxo de Requisição via API Interna<a class="headerlink" href="#fluxo-de-requisicao-via-api-interna" title="Link to this heading">¶</a></h2>
+<p>O diagrama abaixo mostra como a API Interna integra o front-end com o backend:</p>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant FE as 🌐 Frontend
+    participant API as 🔧 API Interna
+    participant MW as 🧱 Middlewares
+    participant SVC as 🧠 Serviço de Domínio
+    participant DBI as 🗄️ DB Interno
+    participant EXT as 🧩 API Local
+
+    FE-&gt;&gt;API: HTTP request (JSON)
+    API-&gt;&gt;MW: Encaminha requisição
+    MW-&gt;&gt;MW: Valida, autentica, loga
+    MW-&gt;&gt;SVC: Chama caso de uso
+
+    SVC-&gt;&gt;DBI: Consulta/atualiza dados internos
+    DBI--&gt;&gt;SVC: Retorno interno
+
+    SVC-&gt;&gt;EXT: (Opcional) chama API Local
+    EXT--&gt;&gt;SVC: Retorno externo
+
+    SVC--&gt;&gt;API: Resultado agregado
+    API--&gt;&gt;FE: HTTP response (JSON)
+    </pre><p>Resumo do fluxo:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>O Frontend envia uma requisição HTTP para a API Interna.
+A API passa pelos middlewares (auth, logs, validação básica).
+Os serviços de domínio executam a regra de negócio, acessando:
+    Banco interno (DB Interno),
+    API Local (que conversa com o DB Externo),
+    Cache (quando aplicável, ver seção 3 e 6).
+Os dados são tratados e unificados.
+A resposta volta em um formato JSON padronizado para o frontend.
+</pre></div>
+</div>
+</section>
+<section id="contratos-e-padroes-da-api-interna">
+<h2>7.3 Contratos e Padrões da API Interna<a class="headerlink" href="#contratos-e-padroes-da-api-interna" title="Link to this heading">¶</a></h2>
+<p>Base path único para a API, por exemplo: /api.
+Versionamento por prefixo, quando necessário:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/api/v1/...
+/api/v2/... (quando houver quebra de compatibilidade).
+</pre></div>
+</div>
+<p>Os nomes de recursos seguem um padrão REST simples:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>GET /api/v1/items
+POST /api/v1/items
+GET /api/v1/items/:id
+</pre></div>
+</div>
+<p>7.3.2 Formato de Resposta</p>
+<p>Todas as respostas da API Interna seguem um formato consistente (exemplo):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;nome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Exemplo&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ativo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-01-01T12:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;correlationId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc-123&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;errors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>7.3.3 Tratamento de Erros</p>
+<p>Erros são sempre devolvidos de forma estruturada, por exemplo:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-01-01T12:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;correlationId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc-123&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;errors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VALIDATION_ERROR&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Campo &#39;nome&#39; é obrigatório&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;field&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nome&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Códigos de erro padronizados (ex.: UNAUTHORIZED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, INTERNAL_ERROR).
+Status HTTP coerentes:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>200/201 para sucesso,
+400 para erro de validação,
+401/403 para falhas de autenticação/autorização,
+404 para recurso não encontrado,
+500 para erro interno inesperado.
+</pre></div>
+</div>
+</section>
+<section id="seguranca-e-autenticacao-na-api-interna">
+<h2>7.4 Segurança e Autenticação na API Interna<a class="headerlink" href="#seguranca-e-autenticacao-na-api-interna" title="Link to this heading">¶</a></h2>
+<p>Toda requisição relevante passa por middlewares de segurança:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Validação de token (ex.: JWT, sessão ou outro mecanismo configurado).
+Verificação de permissões (roles, escopos, perfis).
+</pre></div>
+</div>
+<p>O frontend nunca fala diretamente com o sistema externo:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Tokens e credenciais sensíveis ficam apenas no backend.
+A API Interna atua como camada de proteção e “tradutor” entre o front e o legado.
+</pre></div>
+</div>
+<p>Logs estruturados registram:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>correlationId (para rastrear a requisição ponta a ponta),
+usuário autenticado (quando houver),
+endpoint, status HTTP e tempo de resposta.
+</pre></div>
+</div>
+</section>
+<section id="decisoes-essenciais-de-integracao">
+<h2>7.5 Decisões Essenciais de Integração<a class="headerlink" href="#decisoes-essenciais-de-integracao" title="Link to this heading">¶</a></h2>
+<p>🌐 Ponto único de entrada: todo consumo do front passa pela API Interna.</p>
+<p>📏 Contratos estáveis: mudanças internas no backend não quebram o front, desde que o contrato da API se mantenha.</p>
+<p>🧱 Middlewares obrigatórios: autenticação, autorização, logs e validação sempre antes da lógica de negócio.</p>
+<p>🔄 Tratamento uniforme de erros: o front lida com um formato único de erro, independentemente da origem (DB Interno, API Local, etc.).</p>
+<p>🧩 Encapsulamento do legado: o DataBridge e os clientes externos escondem peculiaridades da API Local e do DB Externo.</p>
+<p>📑 Documentação da API: endpoints documentados em formato adequado (OpenAPI/Swagger ou equivalente), alinhados com esta seção.</p>
+</section>
 </section>
 
         </article>
@@ -239,7 +382,17 @@
         
         <div class="related-pages">
           
-          
+          <a class="prev-page" href="04-estrutura-do-backend.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">4. Estrutura do Back-End</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -258,8 +411,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">5. Integração do Back-End com a API Interna</a><ul>
+<li><a class="reference internal" href="#explicacao-nao-tecnica">7.1 Explicação não técnica</a></li>
+<li><a class="reference internal" href="#fluxo-de-requisicao-via-api-interna">7.2 Fluxo de Requisição via API Interna</a></li>
+<li><a class="reference internal" href="#contratos-e-padroes-da-api-interna">7.3 Contratos e Padrões da API Interna</a></li>
+<li><a class="reference internal" href="#seguranca-e-autenticacao-na-api-interna">7.4 Segurança e Autenticação na API Interna</a></li>
+<li><a class="reference internal" href="#decisoes-essenciais-de-integracao">7.5 Decisões Essenciais de Integração</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

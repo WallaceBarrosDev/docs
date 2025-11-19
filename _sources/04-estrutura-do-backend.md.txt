@@ -1,0 +1,202 @@
+# 4. Estrutura do Back-End
+
+## 6.1 Explicação não técnica
+
+O backend é a **“parte invisível” do sistema**, que roda no servidor e:
+
+* Recebe os pedidos vindos do front-end (por exemplo: “listar itens”, “salvar formulário”).
+* Confere se o usuário **pode** fazer aquela ação (permissões, login, regras).
+* Conversa com:
+  * o **banco interno** (dados próprios do sistema),
+  * o **sistema local/externo** (API Local + DB Externo),
+  * e o **cache** (para responder mais rápido).
+* Junta todas essas informações, aplica as regras de negócio e devolve uma **resposta única e limpa** para o front-end, sempre passando pela **API interna**, nunca expondo diretamente o sistema externo.
+
+Em resumo: o backend é o **porteiro + recepcionista + analista** entre o front-end e os dados/sistemas internos/externos.
+
+---
+
+## 6.2 Lógica de Funcionamento do Back-End
+
+O fluxo abaixo mostra, de forma simplificada, como uma requisição percorre o backend:
+
+```{mermaid}
+flowchart LR
+    FE["🌐 Frontend"] --> API["🔧 API Interna"]
+    API --> MW["🧱 (logs, validação, auth)"]
+    MW --> UC["🧠 Serviços / Casos de Uso"]
+    
+    UC --> Cache(("⚡ Cache"))
+    UC --> DBI(("🗄️ DB Interno"))
+    UC --> Bridge["🔗 (API Externa)"]
+    
+    Bridge --> LocalAPI["🧩 API Local"]
+    LocalAPI --> DBE(("🗄️ DB Externo"))
+
+    DBI --> UC
+    Cache --> UC
+    DBE --> LocalAPI
+    LocalAPI --> Bridge
+    UC --> API
+    API --> FE
+
+%% Estilos padronizados (iguais aos diagramas da Arquitetura Geral)
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+class FE frontend;
+class API,MW,UC,Bridge,LocalAPI backend;
+class DBI,DBE db;
+class Cache cache;
+```
+
+Passo a passo em linguagem simples:
+
+O frontend chama a API Interna com uma requisição HTTP (GET/POST etc.).
+
+A requisição passa por middlewares (logs, validação, autenticação, autorização).
+
+A lógica principal é executada em Serviços/Casos de Uso:
+
+decide se precisa do banco interno, da API externa e/ou do cache;
+
+aplica regras de negócio (ex.: “se o usuário for administrador, mostra X”).
+
+Se precisar de dados externos, o caso de uso chama o DataBridge, que fala com a API Local e o DB Externo.
+
+O que vier da API Local + DB Externo e do DB Interno é transformado e unificado.
+
+A resposta final (já sem detalhes internos) volta pela API Interna → Frontend, em formato JSON.
+
+## 6.3 Arquitetura Interna e Serviços do Back-End
+
+Abaixo está a visão em camadas de como o backend é organizado internamente:
+
+```{mermaid}
+graph TD
+
+subgraph HTTP["Camada HTTP"]
+    Routes["🛣️ Rotas (Express)"]
+    Controllers["🎛️ Controllers"]
+    Middlewares["🧱 M(auth, logs, validação)"]
+end
+
+subgraph Domain["Camada de Domínio"]
+    Services["🧠 Serviços / Casos de Uso"]
+    Validators["✔️ Validadores / Regras"]
+end
+
+subgraph Infra["Infraestrutura"]
+    Repos["📂 Repositórios"]
+    ExtClients["🔗 Clientes Externos"]
+    CacheProv["⚡ Cache Provider"]
+    Logger["📜 Logger"]
+    Config["⚙️ Config / Env"]
+end
+
+DBI[("🗄️ DB Interno")]
+DBE[("🗄️ DB Externo")]
+LocalAPI["🧩 API Local"]
+
+Routes --> Controllers
+Controllers --> Middlewares
+Middlewares --> Services
+
+Services --> Validators
+Services --> Repos
+Services --> ExtClients
+Services --> CacheProv
+
+Repos --> DBI
+ExtClients --> LocalAPI
+LocalAPI --> DBE
+
+%% Estilos padronizados
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+
+class Routes,Controllers,Middlewares,Services,Validators,Repos,ExtClients,CacheProv,Logger,Config backend;
+class LocalAPI external;
+class DBI,DBE db;
+```
+
+
+
+## Camada de Domínio
+
+
+Serviços / Casos de Uso: contêm a regra de negócio (ex.: “criar pedido”, “sincronizar dados externos”).
+
+Validadores / Regras: encapsulam regras específicas (ex.: validação de estado, limites, consistência).
+
+## Infraestrutura
+
+Repositórios: abstraem acesso ao DB Interno (queries, ORMs, etc.).
+
+Clientes Externos (DataBridge, API Local): encapsulam requisições à API Local e, por consequência, ao DB Externo.
+
+Cache Provider: cuida de leitura/escrita no cache (ex.: Redis ou similar).
+
+Logger: centraliza logs estruturados e erros.
+
+Config / Env: centraliza variáveis de ambiente, URLs, chaves, credenciais (sem espalhar process.env pelo código).
+
+
+## 6.4 Estrutura de Código do Back-End (Exemplo)
+
+
+Abaixo, um modelo de organização de pastas alinhado à arquitetura acima (ajuste conforme sua stack real):
+
+    backend/
+    src/
+    server.ts              # bootstrap do servidor HTTP (Express)
+    config/                # configs, env, mapeamento de variáveis
+      env.ts
+      logger.ts
+    modules/
+      auth/
+        http/
+          controllers/
+          routes.ts
+          middlewares/
+        services/
+        repositories/
+        dtos/
+      sync/
+        http/
+          controllers/
+          routes.ts
+        services/
+          SyncExternalDataService.ts
+        repositories/
+          InternalDataRepository.ts
+        external/
+          LocalApiClient.ts   # DataBridge p/ API Local
+      shared/
+        errors/
+        utils/
+    infra/
+      http/
+        app.ts              # instancia Express, aplica middlewares globais
+      db/
+        prisma/             # ou sequelize/typeorm/query builder
+      cache/
+        redisClient.ts
+      external/
+    httpClient.ts       # wrapper HTTP (axios/fetch) comum
+
+## Ideias-chave dessa estrutura:
+
+Cada módulo de domínio (auth, sync, etc.) agrupa seu próprio http/, services/, repositories/ etc.
+
+A infra concentra detalhes tecnológicos (Express, ORM, Redis, HTTP client).
+
+A camada de domínio (services, regras) não “conhece” detalhes de infraestrutura, apenas interfaces (repos, clients).

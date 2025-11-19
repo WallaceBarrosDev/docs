@@ -1,0 +1,150 @@
+# 5. Integração do Back-End com a API Interna
+
+## 7.1 Explicação não técnica
+
+A **API Interna** é a “porta oficial” pela qual o front-end conversa com o backend.  
+Ela:
+
+* Recebe as requisições do front-end (ex.: listar dados, salvar formulário).
+* Garante que **todas** as regras de segurança e validação sejam aplicadas.
+* Encaminha o pedido para a **lógica de negócio** correta (serviços/casos de uso).
+* Junta dados do **banco interno**, do **sistema local/externo** e do **cache**.
+* Devolve uma **resposta padronizada em JSON**, simples de consumir pelo front-end.
+
+Para o front-end, a API Interna é um **ponto único e estável**: ele não precisa conhecer detalhes de banco, APIs locais, formatos legados, etc.
+
+---
+
+## 7.2 Fluxo de Requisição via API Interna
+
+O diagrama abaixo mostra como a API Interna integra o front-end com o backend:
+
+```{mermaid}
+sequenceDiagram
+    participant FE as 🌐 Frontend
+    participant API as 🔧 API Interna
+    participant MW as 🧱 Middlewares
+    participant SVC as 🧠 Serviço de Domínio
+    participant DBI as 🗄️ DB Interno
+    participant EXT as 🧩 API Local
+
+    FE->>API: HTTP request (JSON)
+    API->>MW: Encaminha requisição
+    MW->>MW: Valida, autentica, loga
+    MW->>SVC: Chama caso de uso
+
+    SVC->>DBI: Consulta/atualiza dados internos
+    DBI-->>SVC: Retorno interno
+
+    SVC->>EXT: (Opcional) chama API Local
+    EXT-->>SVC: Retorno externo
+
+    SVC-->>API: Resultado agregado
+    API-->>FE: HTTP response (JSON)
+```
+
+Resumo do fluxo:
+
+    O Frontend envia uma requisição HTTP para a API Interna.
+    A API passa pelos middlewares (auth, logs, validação básica).
+    Os serviços de domínio executam a regra de negócio, acessando:
+        Banco interno (DB Interno),
+        API Local (que conversa com o DB Externo),
+        Cache (quando aplicável, ver seção 3 e 6).
+    Os dados são tratados e unificados.
+    A resposta volta em um formato JSON padronizado para o frontend.
+
+## 7.3 Contratos e Padrões da API Interna
+
+Base path único para a API, por exemplo: /api.
+Versionamento por prefixo, quando necessário:
+
+    /api/v1/...
+    /api/v2/... (quando houver quebra de compatibilidade).
+
+Os nomes de recursos seguem um padrão REST simples:
+
+    GET /api/v1/items
+    POST /api/v1/items
+    GET /api/v1/items/:id
+
+7.3.2 Formato de Resposta
+
+Todas as respostas da API Interna seguem um formato consistente (exemplo):
+
+```json
+{
+  "data": {
+    "id": 123,
+    "nome": "Exemplo",
+    "ativo": true
+  },
+  "meta": {
+    "timestamp": "2025-01-01T12:00:00Z",
+    "correlationId": "abc-123"
+  },
+  "errors": []
+}
+```
+
+7.3.3 Tratamento de Erros
+
+Erros são sempre devolvidos de forma estruturada, por exemplo:
+
+```json
+{
+  "data": null,
+  "meta": {
+    "timestamp": "2025-01-01T12:00:00Z",
+    "correlationId": "abc-123"
+  },
+  "errors": [
+    {
+      "code": "VALIDATION_ERROR",
+      "message": "Campo 'nome' é obrigatório",
+      "field": "nome"
+    }
+  ]
+}
+```
+
+Códigos de erro padronizados (ex.: UNAUTHORIZED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, INTERNAL_ERROR).
+Status HTTP coerentes:
+
+    200/201 para sucesso,
+    400 para erro de validação,
+    401/403 para falhas de autenticação/autorização,
+    404 para recurso não encontrado,
+    500 para erro interno inesperado.
+
+## 7.4 Segurança e Autenticação na API Interna
+
+Toda requisição relevante passa por middlewares de segurança:
+
+    Validação de token (ex.: JWT, sessão ou outro mecanismo configurado).
+    Verificação de permissões (roles, escopos, perfis).
+
+O frontend nunca fala diretamente com o sistema externo:
+
+    Tokens e credenciais sensíveis ficam apenas no backend.
+    A API Interna atua como camada de proteção e “tradutor” entre o front e o legado.
+
+Logs estruturados registram:
+
+    correlationId (para rastrear a requisição ponta a ponta),
+    usuário autenticado (quando houver),
+    endpoint, status HTTP e tempo de resposta.
+
+## 7.5 Decisões Essenciais de Integração
+
+🌐 Ponto único de entrada: todo consumo do front passa pela API Interna.
+
+📏 Contratos estáveis: mudanças internas no backend não quebram o front, desde que o contrato da API se mantenha.
+
+🧱 Middlewares obrigatórios: autenticação, autorização, logs e validação sempre antes da lógica de negócio.
+
+🔄 Tratamento uniforme de erros: o front lida com um formato único de erro, independentemente da origem (DB Interno, API Local, etc.).
+
+🧩 Encapsulamento do legado: o DataBridge e os clientes externos escondem peculiaridades da API Local e do DB Externo.
+
+📑 Documentação da API: endpoints documentados em formato adequado (OpenAPI/Swagger ou equivalente), alinhados com esta seção.

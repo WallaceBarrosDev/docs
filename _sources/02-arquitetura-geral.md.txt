@@ -1,0 +1,199 @@
+# 2. Arquitetura Geral
+
+## 3.1 Visão Geral 
+
+A arquitetura do sistema foi projetada para ser **clara**, **modular**, **segura** e **fácil de manter**, atendendo tanto leitores não técnicos quanto desenvolvedores que darão manutenção no futuro.
+
+Abaixo está o diagrama geral simplificado, seguido dos diagramas complementares e um Sequence Diagram separado, tudo com descrições reduzidas para não gerar bugs no Mermaid.
+
+---
+
+## 3.2 Diagrama Geral 
+
+```{mermaid}
+graph TD
+
+subgraph Cliente
+    Browser["🧑‍💻 Navegador"]
+end
+
+subgraph Frontend["Frontend - React + TS"]
+    ReactApp["⚛️ React App"]
+    ApiClient["🌐 API Client"]
+end
+
+subgraph Backend["API Interna - Node/Express"]
+    InternalAPI["🔧 API Interna"]
+    Auth["🔐 Auth"]
+    Cache(("⚡ Cache")) 
+    InternalDB(("🗄️ DB Interno")) 
+    DataBridge["🔗 API Externa"]
+end
+
+subgraph Externa["Sistema Local"]
+    LocalAPI["🧩 API Local"]
+    LocalDB(("🗄️ DB Externo")) 
+end
+
+Browser --> ReactApp
+ReactApp --> ApiClient
+ApiClient --> InternalAPI
+InternalAPI --> Auth
+InternalAPI --> Cache
+InternalAPI --> InternalDB
+InternalAPI --> DataBridge
+DataBridge --> LocalAPI
+LocalAPI --> LocalDB
+
+%% ==== Estilos padronizados ====
+%% Tipos:
+%% - user: nós de usuário/cliente
+%% - frontend: app React / client-side
+%% - backend: API interna / DataBridge
+%% - external: sistemas externos / APIs locais
+%% - db: bancos (interno e externo)
+%% - cache: camada de cache
+%% - auth: autenticação/autorização
+
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+%% Aplicação das classes
+class Browser user;
+class ReactApp,ApiClient frontend;
+class InternalAPI,DataBridge backend;
+class LocalAPI external;
+class InternalDB,LocalDB db;
+class Cache cache;
+class Auth auth;
+```
+
+## 3.3 Diagramas Menores Complementares
+
+
+🔹 1. Fluxo Usuário → Frontend
+
+```{mermaid}
+flowchart LR
+    U["🧑‍💻 Usuário"] --> FE["⚛️ Frontend"]
+    FE --> U
+
+%% Estilos padronizados (mesma paleta do diagrama geral)
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+class U user;
+class FE frontend;
+```
+
+🔹 2. Frontend → Backend
+
+```{mermaid}
+flowchart LR
+    FE["⚛️ Frontend"] --> API["🔧 Backend"]
+    API --> FE
+
+%% Estilos padronizados
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+class FE frontend;
+class API backend;
+```
+
+🔹 3. Backend → API Externa e Banco Externo
+
+```{mermaid}
+flowchart LR
+    API["🔧 Backend"] --> DBI(("🗄️ DB Interno"))
+    API --> Bridge["🔗 DataBridge"]
+    Bridge --> Ext["🧩 API Externa"]
+    Ext --> DBE(("🗄️ DB Externo"))
+
+%% Estilos padronizados
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+class API backend;
+class Bridge,Ext external;
+class DBI,DBE db;
+```
+
+## 3.4 Sequence Diagram
+
+```{mermaid}
+sequenceDiagram
+    participant U as 🧑 Usuário
+    participant FE as 🌐 Frontend
+    participant BE as 🔧 Backend
+    participant DBI as 🗄️ Banco Interno
+    participant APIEXT as 🧩 API Externa
+    participant DBEXT as 🗄️ Banco Externo
+
+    U->>FE: Acessa o site
+    FE->>FE: Atualiza estado
+
+    FE->>BE: Requisição de dados
+    BE->>BE: Valida / autentica
+
+    BE->>DBI: Consulta dados locais
+    DBI-->>BE: Retorno interno
+
+    BE->>APIEXT: Solicita dados externos
+    APIEXT->>DBEXT: Consulta base externa
+    DBEXT-->>APIEXT: Retorno externo
+    APIEXT-->>BE: Dados externos
+
+    BE-->>FE: Resposta final JSON
+    FE->>U: Renderiza UI
+```
+
+## 3.5 Resumo Técnico do Fluxo
+
+O usuário acessa o navegador.
+
+O servidor entrega o front-end estático.
+
+O front-end consulta apenas a API interna.
+
+O backend processa tudo e acessa:
+    banco interno,
+    API externa,
+    cache,
+    futuros módulos (ex.: pagamento).
+
+O back retorna dados limpos e unificados.
+
+O frontend atualiza tudo de forma reativa.
+
+## 3.6 Decisões Arquiteturais Essenciais
+
+🔐 Segurança: o frontend nunca acessa o sistema externo diretamente.
+
+🔄 Cache: reduz carga sobre o sistema legado.
+
+🧱 Backend como camada de proteção: valida, transforma e agrega dados.
+
+📦 Hospedagem compartilhada: exige build estático e backend leve.
+
+📘 Documentação: tudo em Markdown + Mermaid.

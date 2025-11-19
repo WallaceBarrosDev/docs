@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="1. Introdução" href="01-introducao.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="4. Estrutura do Back-End" href="04-estrutura-do-backend.html"><link rel="prev" title="2. Arquitetura Geral" href="02-arquitetura-geral.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>docs_teste documentation</title>
+        <title>3. Estrutura do Front-End - docs_teste documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -161,7 +161,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">docs_teste  documentation</div></a>
+      <a href="index.html"><div class="brand">docs_teste  documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -172,7 +172,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -180,7 +180,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   <span class="sidebar-brand-text">docs_teste  documentation</span>
   
@@ -191,10 +191,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="01-introducao.html">1. Introdução</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02-arquitetura-geral.html">2. Arquitetura Geral</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03-estrutura-do-frontend.html">3. Estrutura do Front-End</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">3. Estrutura do Front-End</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04-estrutura-do-backend.html">4. Estrutura do Back-End</a></li>
 <li class="toctree-l1"><a class="reference internal" href="05-backend-api-interna.html">5. Integração do Back-End com a API Interna</a></li>
 </ul>
@@ -217,7 +217,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/index.rst.txt" title="View this page">
+  <a class="muted-link" href="_sources/03-estrutura-do-frontend.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -230,60 +230,150 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="docs-teste-documentation">
-<h1>docs_teste documentation<a class="headerlink" href="#docs-teste-documentation" title="Link to this heading">¶</a></h1>
-<p>Bem-vindo à documentação!</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="01-introducao.html">1. Introdução</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="01-introducao.html#explicacao-simples">1.1 Explicação simples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01-introducao.html#explicacao-intermediaria">1.2 Explicação intermediária</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01-introducao.html#explicacao-tecnica">1.3 Explicação técnica</a></li>
+          <section id="estrutura-do-front-end">
+<h1>3. Estrutura do Front-End<a class="headerlink" href="#estrutura-do-front-end" title="Link to this heading">¶</a></h1>
+<section id="visao-geral">
+<h2>5.1 Visão Geral<a class="headerlink" href="#visao-geral" title="Link to this heading">¶</a></h2>
+<p>O front-end é uma <strong>SPA (Single Page Application)</strong> em <strong>React + TypeScript</strong>, focada em:</p>
+<ul class="simple">
+<li><p><strong>Clareza:</strong> separação explícita entre layout, páginas, componentes de domínio e componentes compartilhados.</p></li>
+<li><p><strong>Evolutividade:</strong> módulos de funcionalidade isolados, permitindo inclusão de novas features sem quebrar as existentes.</p></li>
+<li><p><strong>Coesão com o backend:</strong> todo acesso a dados passa por um <strong>API Client</strong> único, alinhado à API interna descrita na Arquitetura Geral.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="02-arquitetura-geral.html">2. Arquitetura Geral</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#visao-geral">3.1 Visão Geral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#diagrama-geral">3.2 Diagrama Geral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#diagramas-menores-complementares">3.3 Diagramas Menores Complementares</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#sequence-diagram">3.4 Sequence Diagram</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#resumo-tecnico-do-fluxo">3.5 Resumo Técnico do Fluxo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02-arquitetura-geral.html#decisoes-arquiteturais-essenciais">3.6 Decisões Arquiteturais Essenciais</a></li>
+</section>
+<hr class="docutils" />
+<section id="camadas-principais-do-front-end">
+<h2>5.2 Camadas Principais do Front-End<a class="headerlink" href="#camadas-principais-do-front-end" title="Link to this heading">¶</a></h2>
+<pre  class="mermaid">
+        graph TD
+
+U[&quot;🧑‍💻 Usuário&quot;] --&gt; SPA[&quot;⚛️ App Root (SPA)&quot;]
+
+subgraph Frontend[&quot;Camadas do Frontend&quot;]
+    SPA
+    Router[&quot;🧭 Router&quot;]
+    Layout[&quot;📐 Layout / App Shell&quot;]
+    Pages[&quot;📄 Páginas&quot;]
+    Features[&quot;🧩 Funcionalidade&quot;]
+    UIShared[&quot;🎨 UI Compartilhada&quot;]
+    Hooks[&quot;🪝 Hooks / Estado&quot;]
+    ApiClient[&quot;🌐 API Client&quot;]
+end
+
+SPA --&gt; Router
+Router --&gt; Layout
+Layout --&gt; Pages
+Pages --&gt; Features
+Features --&gt; UIShared
+Features --&gt; Hooks
+Hooks --&gt; ApiClient
+
+%% Estilos padronizados (mesma paleta da Arquitetura Geral)
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+class U user;
+class SPA,Router,Layout,Pages,Features,UIShared,Hooks,ApiClient frontend;
+    </pre><p><strong>Descrição rápida das camadas:</strong></p>
+<ul class="simple">
+<li><p><strong>App Root (SPA):</strong> ponto de entrada da aplicação React.</p></li>
+<li><p><strong>Router:</strong> define as rotas e faz o mapeamento <code class="docutils literal notranslate"><span class="pre">URL</span> <span class="pre">→</span> <span class="pre">Página</span></code>.</p></li>
+<li><p><strong>Layout/App Shell:</strong> cabeçalho, menu, rodapé, áreas fixas.</p></li>
+<li><p><strong>Páginas:</strong> containers de alto nível (ex.: Dashboard, Configurações).</p></li>
+<li><p><strong>Módulos de Funcionalidade:</strong> lógica e UI específicas de cada domínio.</p></li>
+<li><p><strong>UI Compartilhada:</strong> componentes genéricos (botões, tabelas, modais…).</p></li>
+<li><p><strong>Hooks/Estado:</strong> controle de estado local/global, side effects e chamadas.</p></li>
+<li><p><strong>API Client:</strong> encapsula chamadas HTTP à API interna.</p></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="03-estrutura-do-frontend.html">3. Estrutura do Front-End</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#visao-geral">5.1 Visão Geral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#camadas-principais-do-front-end">5.2 Camadas Principais do Front-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#organizacao-de-pastas">5.3 Organização de Pastas</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#fluxo-de-renderizacao-e-dados-no-front-end">5.4 Fluxo de Renderização e Dados no Front-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03-estrutura-do-frontend.html#decisoes-de-front-end">5.5 Decisões de Front-End</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="04-estrutura-do-backend.html">4. Estrutura do Back-End</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#explicacao-nao-tecnica">6.1 Explicação não técnica</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#logica-de-funcionamento-do-back-end">6.2 Lógica de Funcionamento do Back-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#arquitetura-interna-e-servicos-do-back-end">6.3 Arquitetura Interna e Serviços do Back-End</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#camada-de-dominio">Camada de Domínio</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#infraestrutura">Infraestrutura</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#estrutura-de-codigo-do-back-end-exemplo">6.4 Estrutura de Código do Back-End (Exemplo)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04-estrutura-do-backend.html#ideias-chave-dessa-estrutura">Ideias-chave dessa estrutura:</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="05-backend-api-interna.html">5. Integração do Back-End com a API Interna</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#explicacao-nao-tecnica">7.1 Explicação não técnica</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#fluxo-de-requisicao-via-api-interna">7.2 Fluxo de Requisição via API Interna</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#contratos-e-padroes-da-api-interna">7.3 Contratos e Padrões da API Interna</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#seguranca-e-autenticacao-na-api-interna">7.4 Segurança e Autenticação na API Interna</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05-backend-api-interna.html#decisoes-essenciais-de-integracao">7.5 Decisões Essenciais de Integração</a></li>
-</ul>
-</li>
-</ul>
+</section>
+<hr class="docutils" />
+<section id="organizacao-de-pastas">
+<h2>5.3 Organização de Pastas<a class="headerlink" href="#organizacao-de-pastas" title="Link to this heading">¶</a></h2>
+<p>A estrutura abaixo é apenas um <strong>modelo recomendado</strong>, podendo ser ajustada ao projeto real:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>src/
+  main.tsx              # bootstrap da aplicação
+  app/
+    App.tsx            # App root / shell principal
+    routes/            # Definição de rotas e loaders
+    layout/            # Layouts (AppShell, layouts específicos)
+  modules/
+    dashboard/
+      pages/
+      components/
+      hooks/
+      services/
+    settings/
+      pages/
+      components/
+      hooks/
+      services/
+    shared/
+      components/      # Botões, inputs, tabelas genéricas
+      hooks/           # Hooks reutilizáveis (useDebounce, useModal, ...)
+      lib/             # Utilidades, formatadores, mapeadores
+  core/
+    api/               # API Client, interceptors, typed clients
+    config/            # Configurações gerais (URLs, feature flags)
+    store/             # Estado global (se houver: Redux, Zustand, etc.)
+    types/             # Tipos globais / DTOs compartilhados
+  assets/              # Ícones, imagens, fontes
+</pre></div>
 </div>
+</section>
+<hr class="docutils" />
+<section id="fluxo-de-renderizacao-e-dados-no-front-end">
+<h2>5.4 Fluxo de Renderização e Dados no Front-End<a class="headerlink" href="#fluxo-de-renderizacao-e-dados-no-front-end" title="Link to this heading">¶</a></h2>
+<pre  class="mermaid">
+        flowchart LR
+    U[&quot;🧑‍💻 Usuário&quot;] --&gt; UI[&quot;🪟 UI (Componentes)&quot;]
+    UI --&gt; State[&quot;🧠 Estado (hooks/store)&quot;]
+    State --&gt; ApiClient[&quot;🌐 API Client&quot;]
+    ApiClient --&gt; State
+    State --&gt; UI
+
+%% Estilos padronizados reutilizados
+classDef user fill:#f5f5f5,stroke:#333,color:#000;
+classDef frontend fill:#61dafb,stroke:#333,color:#000;
+classDef backend fill:#68a063,stroke:#333,color:#000;
+classDef external fill:#4479a1,stroke:#333,color:#fff;
+classDef db fill:#6c5ce7,stroke:#333,color:#fff;
+classDef cache fill:#ff6b6b,stroke:#333,color:#000;
+classDef auth fill:#fdd835,stroke:#333,color:#000;
+
+class U user;
+class UI,State,ApiClient frontend;
+    </pre><p>Resumo do fluxo:</p>
+<ol class="arabic simple">
+<li><p>O <strong>usuário interage</strong> com a UI (cliques, inputs, navegação).</p></li>
+<li><p>Os <strong>componentes</strong> disparam ações que atualizam o <strong>estado</strong> (hooks/store).</p></li>
+<li><p>O estado chama o <strong>API Client</strong> quando precisa de dados do backend.</p></li>
+<li><p>O API Client recebe a resposta da API interna e atualiza o <strong>estado</strong>.</p></li>
+<li><p>A mudança de estado <strong>re-renderiza</strong> a UI de forma reativa.</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="decisoes-de-front-end">
+<h2>5.5 Decisões de Front-End<a class="headerlink" href="#decisoes-de-front-end" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>⚛️ <strong>SPA em React + TS:</strong> reduz recarregamentos de página e melhora UX.</p></li>
+<li><p>🧭 <strong>Router centralizado:</strong> facilita proteção de rotas e layouts por seção.</p></li>
+<li><p>🧩 <strong>Módulos por domínio:</strong> as features ficam isoladas e fáceis de evoluir.</p></li>
+<li><p>🎨 <strong>UI compartilhada:</strong> evita duplicação de componentes visuais.</p></li>
+<li><p>🪝 <strong>Hooks para lógica reutilizável:</strong> separa a lógica de negócios da camada de apresentação.</p></li>
+<li><p>🌐 <strong>API Client único:</strong> padroniza headers, autenticação, tratamento de erros e logging.</p></li>
+<li><p>📁 <strong>Estrutura de pastas previsível:</strong> ajuda novos devs a navegar no projeto rapidamente.</p></li>
+</ul>
+</section>
 </section>
 
         </article>
@@ -291,16 +381,26 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="01-introducao.html">
+          <a class="next-page" href="04-estrutura-do-backend.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">1. Introdução</div>
+                <div class="title">4. Estrutura do Back-End</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          
+          <a class="prev-page" href="02-arquitetura-geral.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">2. Arquitetura Geral</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -319,8 +419,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">3. Estrutura do Front-End</a><ul>
+<li><a class="reference internal" href="#visao-geral">5.1 Visão Geral</a></li>
+<li><a class="reference internal" href="#camadas-principais-do-front-end">5.2 Camadas Principais do Front-End</a></li>
+<li><a class="reference internal" href="#organizacao-de-pastas">5.3 Organização de Pastas</a></li>
+<li><a class="reference internal" href="#fluxo-de-renderizacao-e-dados-no-front-end">5.4 Fluxo de Renderização e Dados no Front-End</a></li>
+<li><a class="reference internal" href="#decisoes-de-front-end">5.5 Decisões de Front-End</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -329,5 +452,13 @@
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     </body>
 </html>
