@@ -1,0 +1,259 @@
+# Diagrama de Componentes
+
+## Estrutura de Componentes do Sistema
+
+Este documento descreve os componentes principais do sistema e suas interações.
+
+## Componentes do Frontend
+
+### Mapa geral
+
+```{mermaid}
+
+graph TD
+
+Frontend["🖥️ Frontend (React + TypeScript)"]
+Backend["⚙️ API Interna (Node.js + Express)"]
+System["💾 Sistema Local (Delphi + Firebird)"]
+
+Frontend --> Backend
+Backend --> System
+
+subgraph Frontend
+direction TB
+Public["🌐 Páginas Públicas"]
+Customer["👤 Área do Cliente"]
+Admin["🧰 Painel Administrativo"]
+Shared["🧩 Componentes Compartilhados"]
+Services["🔄 Serviços & Estado"]
+end
+
+
+```
+
+### Paginas Públicas
+
+```{mermaid}
+
+graph TD
+subgraph Public_Pages["🌐 Páginas Públicas"]
+direction TB
+HomePage["🏠 Home Page"]
+ProductPage["🛍️ Página de Produto"]
+CategoryPage["🗂️ Categoria / Coleção"]
+SearchPage["🔍 Resultados de Busca"]
+CartPage["🛒 Carrinho de Compras"]
+CheckoutPage["💳 Checkout"]
+LoginPage["🔐 Login / Registro"]
+ContactPage["✉️ Contato / Suporte"]
+end
+
+HomePage --> ProductPage
+ProductPage --> CartPage
+CartPage --> CheckoutPage
+LoginPage --> CheckoutPage
+
+classDef page fill:#d0ebff,stroke:#333,stroke-width:0.5px;
+class HomePage,ProductPage,CategoryPage,SearchPage,CartPage,CheckoutPage,LoginPage,ContactPage page;
+
+```
+
+### Área do Cliente
+
+```{mermaid}
+graph TD
+subgraph Customer_Area["👤 Área do Cliente"]
+direction TB
+AccountPage[ Minha Conta]
+OrdersPage[ Meus Pedidos]
+WishlistPage[ Lista de Desejos]
+ProfileSettings
+end
+
+AccountPage --> OrdersPage
+OrdersPage --> WishlistPage
+ProfileSettings --> AccountPage
+```
+
+### Painel Administrativo
+
+```{mermaid}
+graph TD
+subgraph Admin_Dashboard["🧰 Painel Administrativo"]
+direction TB
+DashboardHome["📊 Visão Geral"]
+ProductManager["📦 Gerenciamento de Produtos"]
+OrderManager["🧾 Gerenciamento de Pedidos"]
+UserManager["👥 Gerenciamento de Usuários"]
+ReportsPage["📈 Relatórios e Estatísticas"]
+SystemSettings["⚙️ Configurações do Sistema"]
+end
+
+DashboardHome --> ProductManager
+DashboardHome --> OrderManager
+DashboardHome --> UserManager
+OrderManager --> ReportsPage
+SystemSettings --> ReportsPage
+```
+
+### Serviços e Estado + Componentes Compartilhados
+```{mermaid}
+graph TD
+
+subgraph Shared_Components["🧩 Componentes Compartilhados"]
+direction TB
+Header["🔝 Header / Navegação"]
+Footer["🔻 Footer"]
+Sidebar["📑 Sidebar / Menu Lateral"]
+ProductCard["🛒 Card de Produto"]
+FilterBar["🎚️ Barra de Filtros"]
+Pagination["🔢 Paginação"]
+Modal["💬 Modal Genérico"]
+Toasts["🔔 Notificações"]
+Loader["⏳ Carregamento"]
+end
+
+subgraph Services_State["🔄 Serviços & Estado"]
+direction TB
+ApiService["🌐 Serviço de API"]
+AuthService["🔐 Autenticação"]
+CartService["🛍️ Carrinho"]
+PaymentService["💳 Pagamento"]
+AppContext["🧠 Contexto da Aplicação"]
+CartContext["🧺 Contexto do Carrinho"]
+AuthContext["👤 Contexto de Usuário"]
+end
+
+Header --> ApiService
+ProductCard --> CartService
+CartService --> CartContext
+AuthService --> AuthContext
+ApiService --> AppContext
+
+classDef service fill:#ffd43b,stroke:#333,stroke-width:0.5px;
+classDef component fill:#e7f5ff,stroke:#333,stroke-width:0.5px;
+
+class ApiService,AuthService,CartService,PaymentService service;
+class Header,Footer,Sidebar,ProductCard,FilterBar,Pagination,Modal,Toasts,Loader component;
+
+```
+
+## Backend – Node + Express + TypeScript
+
+
+### Visão geral
+
+```{mermaid}
+graph TD
+
+Frontend["🖥️ Frontend (React + TS)"]
+Backend["⚙️ API Interna (Node.js + Express)"]
+ExternalAPI["🌐 API Externa (Sistema da Loja)"]
+Database["💾 Banco de Dados Local (Firebird)"]
+
+Frontend --> Backend
+Backend --> ExternalAPI
+ExternalAPI --> Database
+
+subgraph Backend
+direction TB
+Routing["🛣️ Roteamento (Express)"]
+Controllers["🎯 Controladores"]
+Services["🧩 Serviços"]
+Middlewares["🧱 Middlewares"]
+Auth["🔐 Autenticação JWT"]
+end
+
+style Backend fill:#ffd43b,stroke:#333,stroke-width:1px;
+style ExternalAPI fill:#ff922b,stroke:#333,stroke-width:1px;
+style Database fill:#74c0fc,stroke:#333,stroke-width:1px;
+style Frontend fill:#61dafb,stroke:#333,stroke-width:1px;
+```
+
+### Módulo de Rotas e Middlewares
+
+```{mermaid}
+graph TD
+
+subgraph Routing_Middleware["🛣️ Roteamento & Middlewares"]
+direction TB
+Router["🚏 Express Router"]
+LoggerMW["🧾 Logger Middleware"]
+ErrorMW["❌ Error Handler"]
+AuthMW["🔒 Auth Middleware"]
+ValidationMW["🧩 Validation Middleware"]
+CorsMW["🌍 CORS Middleware"]
+end
+
+Router --> AuthMW
+AuthMW --> ValidationMW
+ValidationMW --> Controllers["🎯 Controladores"]
+LoggerMW --> Router
+ErrorMW --> Router
+CorsMW --> Router
+```
+
+### Autenticação e Controle de Acesso
+```{mermaid}
+graph TD
+
+subgraph Auth_System["🔐 Sistema de Autenticação"]
+direction TB
+JWTService["🔑 JWT Service"]
+UserModel["👤 User Model"]
+SessionManager["💼 Session Manager"]
+PasswordHasher["🔒 Criptografia de Senhas"]
+RoleGuard["🛡️ Controle de Permissões"]
+end
+
+UserModel --> JWTService
+JWTService --> SessionManager
+SessionManager --> RoleGuard
+PasswordHasher --> UserModel
+```
+
+### Serviços, Controladores e Integração Externa
+
+```{mermaid}
+graph TD
+
+subgraph Services_Controllers["🧩 Serviços e Controladores"]
+direction TB
+ProductController["🎯 Product Controller"]
+OrderController["🧾 Order Controller"]
+UserController["👥 User Controller"]
+ReportController["📈 Report Controller"]
+end
+
+subgraph Services["🔧 Serviços"]
+direction TB
+ProductService["📦 Product Service"]
+OrderService["💳 Order Service"]
+UserService["🧍 User Service"]
+ReportService["📊 Report Service"]
+end
+
+subgraph Integration["🌐 Integração com API Externa"]
+direction TB
+ExternalAPI["🛰️ API Externa da Loja"]
+DataMapper["🔄 Conversor de Dados"]
+CacheLayer["⚡ Cache / Performance"]
+end
+
+ProductController --> ProductService
+OrderController --> OrderService
+UserController --> UserService
+ReportController --> ReportService
+
+ProductService --> ExternalAPI
+OrderService --> ExternalAPI
+ReportService --> CacheLayer
+ExternalAPI --> DataMapper
+
+classDef block fill:#fff3bf,stroke:#333,stroke-width:0.5px;
+classDef external fill:#ffd8a8,stroke:#333,stroke-width:0.5px;
+
+class ProductController,OrderController,UserController,ReportController block;
+class ProductService,OrderService,UserService,ReportService block;
+class ExternalAPI,DataMapper,CacheLayer external;
+```

@@ -1,0 +1,255 @@
+# Visão Geral da Arquitetura
+
+## Descrição
+
+🏗️ Visão geral da arquitetura
+
+O novo site será uma página moderna e rápida, feita em React, que mostra informações atualizadas da loja de forma segura e automatizada.
+
+Essa página se conecta a uma API interna (um tipo de “ponte inteligente”), que tem três funções principais:
+
+Fazer a autenticação dos acessos — garantindo que apenas as pessoas ou sistemas autorizados consigam ver ou alterar informações.
+
+Cuidar do desempenho e estabilidade — ela guarda em cache dados que não precisam ser buscados toda hora, o que torna o site mais rápido.
+
+Integrar com o sistema local da loja — em vez de buscar informações direto no banco de dados da loja (que está no servidor interno), essa API se comunica com outra API que o sistema local já oferece, garantindo segurança e evitando acessos diretos ao servidor.
+
+Em resumo:
+
+O site React mostra os dados de forma bonita e acessível.
+
+A API interna (Node.js) serve de filtro e proteção.
+
+A API do sistema da loja fornece as informações reais vindas do banco de dados.
+
+Essa estrutura garante segurança, velocidade e facilidade de manutenção, além de deixar o site preparado para futuras expansões, como login de clientes, estatísticas ou integração com outros sistemas.
+
+## Arquitetura do sistema
+
+## Camadas da Aplicação
+
+```{mermaid}
+graph TD
+
+%% ====== CLIENTE ======
+subgraph Cliente
+    Browser[Navegador Web]
+end
+
+%% ====== FRONTEND ======
+subgraph Frontend["Frontend - React + TypeScript"]
+    ReactApp[Aplicação React]
+    State[Gerenciamento de Estado]
+    ApiClient[Cliente de API]
+end
+
+%% ====== BACKEND ======
+subgraph Backend["API Interna - Node.js / Express / TypeScript"]
+    InternalAPI[API Interna]
+    Auth[Autenticação]
+    Cache[(Cache / Otimização)]
+    DataBridge[Camada de Integração]
+end
+
+%% ====== API EXTERNA ======
+subgraph External["API Externa - Sistema Local da Loja"]
+    LocalAPI[API do Sistema Local]
+    LocalDB[(Banco de Dados Local)]
+end
+
+%% ====== FLUXO DE DADOS ======
+Browser --> ReactApp
+ReactApp --> ApiClient
+ApiClient --> InternalAPI
+InternalAPI --> Auth
+InternalAPI --> Cache
+InternalAPI --> DataBridge
+DataBridge --> LocalAPI
+LocalAPI --> LocalDB
+
+%% ====== ESTILOS ======
+style ReactApp fill:#61dafb,stroke:#333,stroke-width:1px
+style InternalAPI fill:#68a063,stroke:#333,stroke-width:1px
+style LocalAPI fill:#4479a1,stroke:#333,stroke-width:1px
+style LocalDB fill:#375a7f,stroke:#333,stroke-width:1px
+style Cache fill:#ff6b6b,stroke:#333,stroke-width:1px
+style Auth fill:#fdd835,stroke:#333,stroke-width:1px
+```
+
+### 1. Camada de Apresentação (Frontend)
+
+Tecnologia: React 18 + TypeScript
+
+Build Tool: Vite
+
+Roteamento: React Router
+
+HTTP Client: Axios
+
+State Management: Context API / Zustand (futuro)
+
+Responsabilidades:
+
+Exibir a interface do site e apresentar os produtos e informações da loja.
+
+Cuidar da experiência do usuário, garantindo navegação rápida e moderna.
+
+Fazer requisições à API interna para buscar dados atualizados.
+
+Validar formulários e entradas antes de enviar ao servidor.
+
+💡 O frontend é o que o cliente vê — a vitrine digital da loja, feita para ser leve, rápida e responsiva.
+
+### 2. Camada de Aplicação (Backend / API Interna)
+
+Tecnologia: Node.js + Express + TypeScript
+
+Framework: Express.js
+
+Validação: Joi / Zod
+
+Autenticação: JWT (futuro)
+
+Responsabilidades:
+
+Servir como ponte segura entre o site e o sistema local da loja.
+
+Fazer autenticação e controle de acesso.
+
+Gerenciar performance com cache e tratamento de requisições.
+
+Orquestrar as chamadas para a API externa (do sistema local).
+
+Evitar acessos diretos ao servidor interno da loja, mantendo a segurança dos dados.
+
+💡 A API interna é como um “intérprete” — ela entende o que o site precisa, busca essas informações de forma controlada e entrega de modo rápido e seguro.
+
+### 3. Camada de Integração (API Externa do Sistema Local)
+
+Tecnologia: API do sistema interno (Delphi + Firebird)
+
+Acesso: Servidor local da loja física
+
+Comunicação: Endpoints expostos pela empresa TecGestão
+
+Responsabilidades:
+
+Fornecer os dados reais do estoque, produtos e informações da loja física.
+
+Atender às solicitações da API interna sem expor o banco de dados diretamente.
+
+Garantir que o site sempre mostre informações atualizadas vindas do sistema principal.
+
+💡 Essa camada é o elo com o sistema da loja — ela centraliza as informações e mantém tudo sincronizado sem comprometer a segurança do servidor interno.
+
+### (Opcional Futuro) 4. Camada de Dados e Performance
+
+Cache: Redis ou memória local (futuro)
+
+Banco Auxiliar: PostgreSQL (para logs, sessões ou histórico, se necessário)
+
+Responsabilidades:
+
+Melhorar a velocidade de resposta guardando dados temporários.
+
+Reduzir requisições desnecessárias à API local.
+
+Aumentar a estabilidade do sistema em horários de pico.
+
+## Fluxo de Dados
+
+```{mermaid}
+sequenceDiagram
+participant U as 🧑 Usuário
+participant F as 🌐 Frontend (React + TS)
+participant I as 🔄 API Interna (Node/Express)
+participant E as 🧩 API Externa (Sistema Local)
+participant DB as 🗄️ Banco de Dados Local
+
+%% Interação do usuário
+U->>F: Interage com o site (navegação, busca, etc.)
+F->>F: Validação local e atualização de estado
+
+%% Comunicação com a API interna
+F->>I: Requisição HTTP (JSON / Axios)
+I->>I: Validação e autenticação (JWT / regras de negócio)
+
+%% API interna se comunica com a API externa
+I->>E: Solicita dados (produtos, estoque, etc.)
+E->>DB: Consulta informações no banco da loja
+DB-->>E: Retorna os dados reais
+
+%% Retorno da cadeia
+E-->>I: Dados tratados da loja
+I->>I: Processamento e cache (otimização de resposta)
+I-->>F: Retorna dados prontos em JSON
+F->>F: Atualiza o estado e renderiza componentes
+F-->>U: Mostra as informações atualizadas na tela
+```
+
+## Princípios de Arquitetura
+
+### 1. Separação de Responsabilidades
+Cada camada tem uma responsabilidade específica e bem definida.
+
+### 2. API-First
+O backend expõe uma API REST bem documentada, permitindo múltiplos clientes.
+
+### 3. Stateless
+O backend não mantém estado de sessão, usando tokens JWT.
+
+### 4. Escalabilidade
+Arquitetura preparada para escalar horizontalmente.
+
+### 5. Testabilidade
+Cada camada pode ser testada independentemente.
+
+## Tecnologias e Ferramentas
+
+### Frontend
+- React 18.2+
+- TypeScript 5.3+
+- Vite 5.0+
+- React Router 6.21+
+- Axios 1.6+
+
+### Backend
+- Node.js 18+
+- Express 4.18+
+- TypeScript 5.3+
+- Helmet (segurança)
+- CORS
+- Morgan (logging)
+
+### Desenvolvimento
+- Git (controle de versão)
+- ESLint (linting)
+- Prettier (formatação)
+- Vitest (testes)
+
+## Segurança
+
+```{mermaid}
+
+graph TD
+A[Requisição do Frontend] --> B{Token JWT presente?}
+B -->|Não| E[401 Unauthorized]
+B -->|Sim| C[Middleware de Autenticação]
+C --> D{Token válido?}
+D -->|Não| E
+D -->|Sim| F[Validação JWT]
+F --> G[Verificação de Permissões]
+G -->|Não autorizado| H[403 Forbidden]
+G -->|Autorizado| I[Controller / Rota Protegida]
+I --> J[Validação e Sanitização de Dados]
+J --> K[Comunicação com API Externa]
+K --> L[Retorno de Dados Processados]
+
+%% ===== Estilos =====
+style E fill:#ff6b6b,stroke:#333,stroke-width:1px
+style H fill:#ff6b6b,stroke:#333,stroke-width:1px
+style I fill:#51cf66,stroke:#333,stroke-width:1px
+style K fill:#61dafb,stroke:#333,stroke-width:1px
+style L fill:#68a063,stroke:#333,stroke-width:1px
+
+```

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="docs_teste documentation" href="index.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="Visão Geral da Arquitetura" href="01-arquitetura-overview.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Página de Teste - docs_teste documentation</title>
+        <title>Diagrama de Componentes - docs_teste documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -190,8 +190,10 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Página de Teste</a></li>
+  <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01-arquitetura-overview.html">Visão Geral da Arquitetura</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Diagrama de Componentes</a></li>
 </ul>
 
 </div>
@@ -212,7 +214,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/teste.md.txt" title="View this page">
+  <a class="muted-link" href="_sources/02-Diagrama-de-Componentes.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -230,24 +232,258 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="pagina-de-teste">
-<h1>Página de Teste<a class="headerlink" href="#pagina-de-teste" title="Link to this heading">¶</a></h1>
-<p>Este é um teste usando <strong>MyST + Mermaid</strong>.</p>
-<section id="diagrama-1">
-<h2>Diagrama 1<a class="headerlink" href="#diagrama-1" title="Link to this heading">¶</a></h2>
+          <section id="diagrama-de-componentes">
+<h1>Diagrama de Componentes<a class="headerlink" href="#diagrama-de-componentes" title="Link to this heading">¶</a></h1>
+<section id="estrutura-de-componentes-do-sistema">
+<h2>Estrutura de Componentes do Sistema<a class="headerlink" href="#estrutura-de-componentes-do-sistema" title="Link to this heading">¶</a></h2>
+<p>Este documento descreve os componentes principais do sistema e suas interações.</p>
+</section>
+<section id="componentes-do-frontend">
+<h2>Componentes do Frontend<a class="headerlink" href="#componentes-do-frontend" title="Link to this heading">¶</a></h2>
+<section id="mapa-geral">
+<h3>Mapa geral<a class="headerlink" href="#mapa-geral" title="Link to this heading">¶</a></h3>
 <pre  class="mermaid">
         graph TD
-    A[Início] --&gt; B[Processar]
-    B --&gt; C{Condição?}
-    C --&gt;|Sim| D[Executa Ação]
-    C --&gt;|Não| E[Fim]
+
+Frontend[&quot;🖥️ Frontend (React + TypeScript)&quot;]
+Backend[&quot;⚙️ API Interna (Node.js + Express)&quot;]
+System[&quot;💾 Sistema Local (Delphi + Firebird)&quot;]
+
+Frontend --&gt; Backend
+Backend --&gt; System
+
+subgraph Frontend
+direction TB
+Public[&quot;🌐 Páginas Públicas&quot;]
+Customer[&quot;👤 Área do Cliente&quot;]
+Admin[&quot;🧰 Painel Administrativo&quot;]
+Shared[&quot;🧩 Componentes Compartilhados&quot;]
+Services[&quot;🔄 Serviços &amp; Estado&quot;]
+end
+
+
     </pre></section>
-<section id="diagrama-2">
-<h2>Diagrama 2<a class="headerlink" href="#diagrama-2" title="Link to this heading">¶</a></h2>
+<section id="paginas-publicas">
+<h3>Paginas Públicas<a class="headerlink" href="#paginas-publicas" title="Link to this heading">¶</a></h3>
 <pre  class="mermaid">
-        flowchart LR
-    Start --&gt; Step1 --&gt; Step2 --&gt; End
+        graph TD
+subgraph Public_Pages[&quot;🌐 Páginas Públicas&quot;]
+direction TB
+HomePage[&quot;🏠 Home Page&quot;]
+ProductPage[&quot;🛍️ Página de Produto&quot;]
+CategoryPage[&quot;🗂️ Categoria / Coleção&quot;]
+SearchPage[&quot;🔍 Resultados de Busca&quot;]
+CartPage[&quot;🛒 Carrinho de Compras&quot;]
+CheckoutPage[&quot;💳 Checkout&quot;]
+LoginPage[&quot;🔐 Login / Registro&quot;]
+ContactPage[&quot;✉️ Contato / Suporte&quot;]
+end
+
+HomePage --&gt; ProductPage
+ProductPage --&gt; CartPage
+CartPage --&gt; CheckoutPage
+LoginPage --&gt; CheckoutPage
+
+classDef page fill:#d0ebff,stroke:#333,stroke-width:0.5px;
+class HomePage,ProductPage,CategoryPage,SearchPage,CartPage,CheckoutPage,LoginPage,ContactPage page;
+
     </pre></section>
+<section id="area-do-cliente">
+<h3>Área do Cliente<a class="headerlink" href="#area-do-cliente" title="Link to this heading">¶</a></h3>
+<pre  class="mermaid">
+        graph TD
+subgraph Customer_Area[&quot;👤 Área do Cliente&quot;]
+direction TB
+AccountPage[ Minha Conta]
+OrdersPage[ Meus Pedidos]
+WishlistPage[ Lista de Desejos]
+ProfileSettings
+end
+
+AccountPage --&gt; OrdersPage
+OrdersPage --&gt; WishlistPage
+ProfileSettings --&gt; AccountPage
+    </pre></section>
+<section id="painel-administrativo">
+<h3>Painel Administrativo<a class="headerlink" href="#painel-administrativo" title="Link to this heading">¶</a></h3>
+<pre  class="mermaid">
+        graph TD
+subgraph Admin_Dashboard[&quot;🧰 Painel Administrativo&quot;]
+direction TB
+DashboardHome[&quot;📊 Visão Geral&quot;]
+ProductManager[&quot;📦 Gerenciamento de Produtos&quot;]
+OrderManager[&quot;🧾 Gerenciamento de Pedidos&quot;]
+UserManager[&quot;👥 Gerenciamento de Usuários&quot;]
+ReportsPage[&quot;📈 Relatórios e Estatísticas&quot;]
+SystemSettings[&quot;⚙️ Configurações do Sistema&quot;]
+end
+
+DashboardHome --&gt; ProductManager
+DashboardHome --&gt; OrderManager
+DashboardHome --&gt; UserManager
+OrderManager --&gt; ReportsPage
+SystemSettings --&gt; ReportsPage
+    </pre></section>
+<section id="servicos-e-estado-componentes-compartilhados">
+<h3>Serviços e Estado + Componentes Compartilhados<a class="headerlink" href="#servicos-e-estado-componentes-compartilhados" title="Link to this heading">¶</a></h3>
+<pre  class="mermaid">
+        graph TD
+
+subgraph Shared_Components[&quot;🧩 Componentes Compartilhados&quot;]
+direction TB
+Header[&quot;🔝 Header / Navegação&quot;]
+Footer[&quot;🔻 Footer&quot;]
+Sidebar[&quot;📑 Sidebar / Menu Lateral&quot;]
+ProductCard[&quot;🛒 Card de Produto&quot;]
+FilterBar[&quot;🎚️ Barra de Filtros&quot;]
+Pagination[&quot;🔢 Paginação&quot;]
+Modal[&quot;💬 Modal Genérico&quot;]
+Toasts[&quot;🔔 Notificações&quot;]
+Loader[&quot;⏳ Carregamento&quot;]
+end
+
+subgraph Services_State[&quot;🔄 Serviços &amp; Estado&quot;]
+direction TB
+ApiService[&quot;🌐 Serviço de API&quot;]
+AuthService[&quot;🔐 Autenticação&quot;]
+CartService[&quot;🛍️ Carrinho&quot;]
+PaymentService[&quot;💳 Pagamento&quot;]
+AppContext[&quot;🧠 Contexto da Aplicação&quot;]
+CartContext[&quot;🧺 Contexto do Carrinho&quot;]
+AuthContext[&quot;👤 Contexto de Usuário&quot;]
+end
+
+Header --&gt; ApiService
+ProductCard --&gt; CartService
+CartService --&gt; CartContext
+AuthService --&gt; AuthContext
+ApiService --&gt; AppContext
+
+classDef service fill:#ffd43b,stroke:#333,stroke-width:0.5px;
+classDef component fill:#e7f5ff,stroke:#333,stroke-width:0.5px;
+
+class ApiService,AuthService,CartService,PaymentService service;
+class Header,Footer,Sidebar,ProductCard,FilterBar,Pagination,Modal,Toasts,Loader component;
+
+    </pre></section>
+</section>
+<section id="backend-node-express-typescript">
+<h2>Backend – Node + Express + TypeScript<a class="headerlink" href="#backend-node-express-typescript" title="Link to this heading">¶</a></h2>
+<section id="visao-geral">
+<h3>Visão geral<a class="headerlink" href="#visao-geral" title="Link to this heading">¶</a></h3>
+<pre  class="mermaid">
+        graph TD
+
+Frontend[&quot;🖥️ Frontend (React + TS)&quot;]
+Backend[&quot;⚙️ API Interna (Node.js + Express)&quot;]
+ExternalAPI[&quot;🌐 API Externa (Sistema da Loja)&quot;]
+Database[&quot;💾 Banco de Dados Local (Firebird)&quot;]
+
+Frontend --&gt; Backend
+Backend --&gt; ExternalAPI
+ExternalAPI --&gt; Database
+
+subgraph Backend
+direction TB
+Routing[&quot;🛣️ Roteamento (Express)&quot;]
+Controllers[&quot;🎯 Controladores&quot;]
+Services[&quot;🧩 Serviços&quot;]
+Middlewares[&quot;🧱 Middlewares&quot;]
+Auth[&quot;🔐 Autenticação JWT&quot;]
+end
+
+style Backend fill:#ffd43b,stroke:#333,stroke-width:1px;
+style ExternalAPI fill:#ff922b,stroke:#333,stroke-width:1px;
+style Database fill:#74c0fc,stroke:#333,stroke-width:1px;
+style Frontend fill:#61dafb,stroke:#333,stroke-width:1px;
+    </pre></section>
+<section id="modulo-de-rotas-e-middlewares">
+<h3>Módulo de Rotas e Middlewares<a class="headerlink" href="#modulo-de-rotas-e-middlewares" title="Link to this heading">¶</a></h3>
+<pre  class="mermaid">
+        graph TD
+
+subgraph Routing_Middleware[&quot;🛣️ Roteamento &amp; Middlewares&quot;]
+direction TB
+Router[&quot;🚏 Express Router&quot;]
+LoggerMW[&quot;🧾 Logger Middleware&quot;]
+ErrorMW[&quot;❌ Error Handler&quot;]
+AuthMW[&quot;🔒 Auth Middleware&quot;]
+ValidationMW[&quot;🧩 Validation Middleware&quot;]
+CorsMW[&quot;🌍 CORS Middleware&quot;]
+end
+
+Router --&gt; AuthMW
+AuthMW --&gt; ValidationMW
+ValidationMW --&gt; Controllers[&quot;🎯 Controladores&quot;]
+LoggerMW --&gt; Router
+ErrorMW --&gt; Router
+CorsMW --&gt; Router
+    </pre></section>
+<section id="autenticacao-e-controle-de-acesso">
+<h3>Autenticação e Controle de Acesso<a class="headerlink" href="#autenticacao-e-controle-de-acesso" title="Link to this heading">¶</a></h3>
+<pre  class="mermaid">
+        graph TD
+
+subgraph Auth_System[&quot;🔐 Sistema de Autenticação&quot;]
+direction TB
+JWTService[&quot;🔑 JWT Service&quot;]
+UserModel[&quot;👤 User Model&quot;]
+SessionManager[&quot;💼 Session Manager&quot;]
+PasswordHasher[&quot;🔒 Criptografia de Senhas&quot;]
+RoleGuard[&quot;🛡️ Controle de Permissões&quot;]
+end
+
+UserModel --&gt; JWTService
+JWTService --&gt; SessionManager
+SessionManager --&gt; RoleGuard
+PasswordHasher --&gt; UserModel
+    </pre></section>
+<section id="servicos-controladores-e-integracao-externa">
+<h3>Serviços, Controladores e Integração Externa<a class="headerlink" href="#servicos-controladores-e-integracao-externa" title="Link to this heading">¶</a></h3>
+<pre  class="mermaid">
+        graph TD
+
+subgraph Services_Controllers[&quot;🧩 Serviços e Controladores&quot;]
+direction TB
+ProductController[&quot;🎯 Product Controller&quot;]
+OrderController[&quot;🧾 Order Controller&quot;]
+UserController[&quot;👥 User Controller&quot;]
+ReportController[&quot;📈 Report Controller&quot;]
+end
+
+subgraph Services[&quot;🔧 Serviços&quot;]
+direction TB
+ProductService[&quot;📦 Product Service&quot;]
+OrderService[&quot;💳 Order Service&quot;]
+UserService[&quot;🧍 User Service&quot;]
+ReportService[&quot;📊 Report Service&quot;]
+end
+
+subgraph Integration[&quot;🌐 Integração com API Externa&quot;]
+direction TB
+ExternalAPI[&quot;🛰️ API Externa da Loja&quot;]
+DataMapper[&quot;🔄 Conversor de Dados&quot;]
+CacheLayer[&quot;⚡ Cache / Performance&quot;]
+end
+
+ProductController --&gt; ProductService
+OrderController --&gt; OrderService
+UserController --&gt; UserService
+ReportController --&gt; ReportService
+
+ProductService --&gt; ExternalAPI
+OrderService --&gt; ExternalAPI
+ReportService --&gt; CacheLayer
+ExternalAPI --&gt; DataMapper
+
+classDef block fill:#fff3bf,stroke:#333,stroke-width:0.5px;
+classDef external fill:#ffd8a8,stroke:#333,stroke-width:0.5px;
+
+class ProductController,OrderController,UserController,ReportController block;
+class ProductService,OrderService,UserService,ReportService block;
+class ExternalAPI,DataMapper,CacheLayer external;
+    </pre></section>
+</section>
 </section>
 
         </article>
@@ -256,14 +492,14 @@
         
         <div class="related-pages">
           
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="01-arquitetura-overview.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Visão Geral da Arquitetura</div>
                 
               </div>
             </a>
@@ -297,9 +533,23 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Página de Teste</a><ul>
-<li><a class="reference internal" href="#diagrama-1">Diagrama 1</a></li>
-<li><a class="reference internal" href="#diagrama-2">Diagrama 2</a></li>
+<li><a class="reference internal" href="#">Diagrama de Componentes</a><ul>
+<li><a class="reference internal" href="#estrutura-de-componentes-do-sistema">Estrutura de Componentes do Sistema</a></li>
+<li><a class="reference internal" href="#componentes-do-frontend">Componentes do Frontend</a><ul>
+<li><a class="reference internal" href="#mapa-geral">Mapa geral</a></li>
+<li><a class="reference internal" href="#paginas-publicas">Paginas Públicas</a></li>
+<li><a class="reference internal" href="#area-do-cliente">Área do Cliente</a></li>
+<li><a class="reference internal" href="#painel-administrativo">Painel Administrativo</a></li>
+<li><a class="reference internal" href="#servicos-e-estado-componentes-compartilhados">Serviços e Estado + Componentes Compartilhados</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#backend-node-express-typescript">Backend – Node + Express + TypeScript</a><ul>
+<li><a class="reference internal" href="#visao-geral">Visão geral</a></li>
+<li><a class="reference internal" href="#modulo-de-rotas-e-middlewares">Módulo de Rotas e Middlewares</a></li>
+<li><a class="reference internal" href="#autenticacao-e-controle-de-acesso">Autenticação e Controle de Acesso</a></li>
+<li><a class="reference internal" href="#servicos-controladores-e-integracao-externa">Serviços, Controladores e Integração Externa</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
