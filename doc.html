@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="5. Integração do Back-End com a API Interna" href="05-backend-api-interna.html"><link rel="prev" title="3. Estrutura do Front-End" href="03-estrutura-do-frontend.html">
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="nj arte sacra documentation" href="index.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>4. Estrutura do Back-End - docs_teste documentation</title>
+        <title>Documentação da API de Produtos - Benedictus - docs_teste documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -192,11 +192,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="01-introducao.html">1. Introdução</a></li>
-<li class="toctree-l1"><a class="reference internal" href="02-arquitetura-geral.html">2. Arquitetura Geral</a></li>
-<li class="toctree-l1"><a class="reference internal" href="03-estrutura-do-frontend.html">3. Estrutura do Front-End</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">4. Estrutura do Back-End</a></li>
-<li class="toctree-l1"><a class="reference internal" href="05-backend-api-interna.html">5. Integração do Back-End com a API Interna</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Documentação da API de Produtos - Benedictus</a></li>
 </ul>
 
 </div>
@@ -217,7 +213,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="_sources/04-estrutura-do-backend.md.txt" title="View this page">
+  <a class="muted-link" href="_sources/doc.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -235,186 +231,192 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="estrutura-do-back-end">
-<h1>4. Estrutura do Back-End<a class="headerlink" href="#estrutura-do-back-end" title="Link to this heading">¶</a></h1>
-<section id="explicacao-nao-tecnica">
-<h2>6.1 Explicação não técnica<a class="headerlink" href="#explicacao-nao-tecnica" title="Link to this heading">¶</a></h2>
-<p>O backend é a <strong>“parte invisível” do sistema</strong>, que roda no servidor e:</p>
+          <section id="documentacao-da-api-de-produtos-benedictus">
+<h1>Documentação da API de Produtos - Benedictus<a class="headerlink" href="#documentacao-da-api-de-produtos-benedictus" title="Link to this heading">¶</a></h1>
+<p>Esta API fornece acesso aos dados de produtos do catálogo, permitindo listagem, filtragem por categoria, busca textual e paginação.</p>
+<section id="visao-geral">
+<h2>🚀 Visão Geral<a class="headerlink" href="#visao-geral" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Recebe os pedidos vindos do front-end (por exemplo: “listar itens”, “salvar formulário”).</p></li>
-<li><p>Confere se o usuário <strong>pode</strong> fazer aquela ação (permissões, login, regras).</p></li>
-<li><p>Conversa com:</p>
-<ul>
-<li><p>o <strong>banco interno</strong> (dados próprios do sistema),</p></li>
-<li><p>o <strong>sistema local/externo</strong> (API Local + DB Externo),</p></li>
-<li><p>e o <strong>cache</strong> (para responder mais rápido).</p></li>
+<li><p><strong>Base URL</strong>: <code class="docutils literal notranslate"><span class="pre">http://localhost:3333</span></code> (Padrão de desenvolvimento)</p></li>
+<li><p><strong>Formato de Resposta</strong>: JSON</p></li>
+<li><p><strong>Autenticação</strong>: Nenhuma (Pública)</p></li>
 </ul>
-</li>
-<li><p>Junta todas essas informações, aplica as regras de negócio e devolve uma <strong>resposta única e limpa</strong> para o front-end, sempre passando pela <strong>API interna</strong>, nunca expondo diretamente o sistema externo.</p></li>
-</ul>
-<p>Em resumo: o backend é o <strong>porteiro + recepcionista + analista</strong> entre o front-end e os dados/sistemas internos/externos.</p>
 </section>
 <hr class="docutils" />
-<section id="logica-de-funcionamento-do-back-end">
-<h2>6.2 Lógica de Funcionamento do Back-End<a class="headerlink" href="#logica-de-funcionamento-do-back-end" title="Link to this heading">¶</a></h2>
-<p>O fluxo abaixo mostra, de forma simplificada, como uma requisição percorre o backend:</p>
+<section id="fluxo-de-dados">
+<h2>📊 Fluxo de Dados<a class="headerlink" href="#fluxo-de-dados" title="Link to this heading">¶</a></h2>
+<p>O diagrama abaixo ilustra como a API processa uma requisição de busca de produtos.</p>
 <pre  class="mermaid">
-        flowchart LR
-    FE[&quot;🌐 Frontend&quot;] --&gt; API[&quot;🔧 API Interna&quot;]
-    API --&gt; MW[&quot;🧱 (logs, validação, auth)&quot;]
-    MW --&gt; UC[&quot;🧠 Serviços / Casos de Uso&quot;]
-    
-    UC --&gt; Cache((&quot;⚡ Cache&quot;))
-    UC --&gt; DBI((&quot;🗄️ DB Interno&quot;))
-    UC --&gt; Bridge[&quot;🔗 (API Externa)&quot;]
-    
-    Bridge --&gt; LocalAPI[&quot;🧩 API Local&quot;]
-    LocalAPI --&gt; DBE((&quot;🗄️ DB Externo&quot;))
+        sequenceDiagram
+    participant Cliente
+    participant API
+    participant SistemaArquivos as File System (JSON)
 
-    DBI --&gt; UC
-    Cache --&gt; UC
-    DBE --&gt; LocalAPI
-    LocalAPI --&gt; Bridge
-    UC --&gt; API
-    API --&gt; FE
+    Note over Cliente, API: Exemplo: GET /products?page=1&amp;category=Velas
 
-%% Estilos padronizados (iguais aos diagramas da Arquitetura Geral)
-classDef user fill:#f5f5f5,stroke:#333,color:#000;
-classDef frontend fill:#61dafb,stroke:#333,color:#000;
-classDef backend fill:#68a063,stroke:#333,color:#000;
-classDef external fill:#4479a1,stroke:#333,color:#fff;
-classDef db fill:#6c5ce7,stroke:#333,color:#fff;
-classDef cache fill:#ff6b6b,stroke:#333,color:#000;
-classDef auth fill:#fdd835,stroke:#333,color:#000;
+    Cliente-&gt;&gt;API: Requisição HTTP GET
+    activate API
 
-class FE frontend;
-class API,MW,UC,Bridge,LocalAPI backend;
-class DBI,DBE db;
-class Cache cache;
-    </pre><p>Passo a passo em linguagem simples:</p>
-<p>O frontend chama a API Interna com uma requisição HTTP (GET/POST etc.).</p>
-<p>A requisição passa por middlewares (logs, validação, autenticação, autorização).</p>
-<p>A lógica principal é executada em Serviços/Casos de Uso:</p>
-<p>decide se precisa do banco interno, da API externa e/ou do cache;</p>
-<p>aplica regras de negócio (ex.: “se o usuário for administrador, mostra X”).</p>
-<p>Se precisar de dados externos, o caso de uso chama o DataBridge, que fala com a API Local e o DB Externo.</p>
-<p>O que vier da API Local + DB Externo e do DB Interno é transformado e unificado.</p>
-<p>A resposta final (já sem detalhes internos) volta pela API Interna → Frontend, em formato JSON.</p>
-</section>
-<section id="arquitetura-interna-e-servicos-do-back-end">
-<h2>6.3 Arquitetura Interna e Serviços do Back-End<a class="headerlink" href="#arquitetura-interna-e-servicos-do-back-end" title="Link to this heading">¶</a></h2>
-<p>Abaixo está a visão em camadas de como o backend é organizado internamente:</p>
-<pre  class="mermaid">
-        graph TD
+    API-&gt;&gt;SistemaArquivos: Ler produtos_atualizado.json
+    activate SistemaArquivos
+    SistemaArquivos--&gt;&gt;API: Retorna dados brutos
+    deactivate SistemaArquivos
 
-subgraph HTTP[&quot;Camada HTTP&quot;]
-    Routes[&quot;🛣️ Rotas (Express)&quot;]
-    Controllers[&quot;🎛️ Controllers&quot;]
-    Middlewares[&quot;🧱 M(auth, logs, validação)&quot;]
-end
+    API-&gt;&gt;API: Normalizar dados
 
-subgraph Domain[&quot;Camada de Domínio&quot;]
-    Services[&quot;🧠 Serviços / Casos de Uso&quot;]
-    Validators[&quot;✔️ Validadores / Regras&quot;]
-end
+    alt Possui Filtros?
+        API-&gt;&gt;API: Filtrar por Categoria / Busca
+    end
 
-subgraph Infra[&quot;Infraestrutura&quot;]
-    Repos[&quot;📂 Repositórios&quot;]
-    ExtClients[&quot;🔗 Clientes Externos&quot;]
-    CacheProv[&quot;⚡ Cache Provider&quot;]
-    Logger[&quot;📜 Logger&quot;]
-    Config[&quot;⚙️ Config / Env&quot;]
-end
+    API-&gt;&gt;API: Calcular Paginação (skip/take)
 
-DBI[(&quot;🗄️ DB Interno&quot;)]
-DBE[(&quot;🗄️ DB Externo&quot;)]
-LocalAPI[&quot;🧩 API Local&quot;]
-
-Routes --&gt; Controllers
-Controllers --&gt; Middlewares
-Middlewares --&gt; Services
-
-Services --&gt; Validators
-Services --&gt; Repos
-Services --&gt; ExtClients
-Services --&gt; CacheProv
-
-Repos --&gt; DBI
-ExtClients --&gt; LocalAPI
-LocalAPI --&gt; DBE
-
-%% Estilos padronizados
-classDef frontend fill:#61dafb,stroke:#333,color:#000;
-classDef backend fill:#68a063,stroke:#333,color:#000;
-classDef external fill:#4479a1,stroke:#333,color:#fff;
-classDef db fill:#6c5ce7,stroke:#333,color:#fff;
-classDef cache fill:#ff6b6b,stroke:#333,color:#000;
-
-class Routes,Controllers,Middlewares,Services,Validators,Repos,ExtClients,CacheProv,Logger,Config backend;
-class LocalAPI external;
-class DBI,DBE db;
+    API--&gt;&gt;Cliente: Retorna JSON { data, meta }
+    deactivate API
     </pre></section>
-<section id="camada-de-dominio">
-<h2>Camada de Domínio<a class="headerlink" href="#camada-de-dominio" title="Link to this heading">¶</a></h2>
-<p>Serviços / Casos de Uso: contêm a regra de negócio (ex.: “criar pedido”, “sincronizar dados externos”).</p>
-<p>Validadores / Regras: encapsulam regras específicas (ex.: validação de estado, limites, consistência).</p>
-</section>
-<section id="infraestrutura">
-<h2>Infraestrutura<a class="headerlink" href="#infraestrutura" title="Link to this heading">¶</a></h2>
-<p>Repositórios: abstraem acesso ao DB Interno (queries, ORMs, etc.).</p>
-<p>Clientes Externos (DataBridge, API Local): encapsulam requisições à API Local e, por consequência, ao DB Externo.</p>
-<p>Cache Provider: cuida de leitura/escrita no cache (ex.: Redis ou similar).</p>
-<p>Logger: centraliza logs estruturados e erros.</p>
-<p>Config / Env: centraliza variáveis de ambiente, URLs, chaves, credenciais (sem espalhar process.env pelo código).</p>
-</section>
-<section id="estrutura-de-codigo-do-back-end-exemplo">
-<h2>6.4 Estrutura de Código do Back-End (Exemplo)<a class="headerlink" href="#estrutura-de-codigo-do-back-end-exemplo" title="Link to this heading">¶</a></h2>
-<p>Abaixo, um modelo de organização de pastas alinhado à arquitetura acima (ajuste conforme sua stack real):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>backend/
-src/
-server.ts              # bootstrap do servidor HTTP (Express)
-config/                # configs, env, mapeamento de variáveis
-  env.ts
-  logger.ts
-modules/
-  auth/
-    http/
-      controllers/
-      routes.ts
-      middlewares/
-    services/
-    repositories/
-    dtos/
-  sync/
-    http/
-      controllers/
-      routes.ts
-    services/
-      SyncExternalDataService.ts
-    repositories/
-      InternalDataRepository.ts
-    external/
-      LocalApiClient.ts   # DataBridge p/ API Local
-  shared/
-    errors/
-    utils/
-infra/
-  http/
-    app.ts              # instancia Express, aplica middlewares globais
-  db/
-    prisma/             # ou sequelize/typeorm/query builder
-  cache/
-    redisClient.ts
-  external/
-httpClient.ts       # wrapper HTTP (axios/fetch) comum
+<hr class="docutils" />
+<section id="endpoints">
+<h2>🔗 Endpoints<a class="headerlink" href="#endpoints" title="Link to this heading">¶</a></h2>
+<section id="listar-produtos">
+<h3>1. Listar Produtos<a class="headerlink" href="#listar-produtos" title="Link to this heading">¶</a></h3>
+<p>Retorna uma lista paginada de produtos.</p>
+<p><strong>Rota:</strong> <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/products</span></code></p>
+<p><strong>Parâmetros de Consulta (Query Params):</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Parâmetro</p></th>
+<th class="head text-left"><p>Tipo</p></th>
+<th class="head text-left"><p>Padrão</p></th>
+<th class="head text-left"><p>Descrição</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">page</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td class="text-left"><p>Número da página atual.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">10</span></code></p></td>
+<td class="text-left"><p>Quantidade de itens por página.</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">category</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Filtra produtos por categoria exata.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">search</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td class="text-left"><p>-</p></td>
+<td class="text-left"><p>Busca textual no nome ou descrição.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Exemplo de Requisição:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>GET<span class="w"> </span>/products?page<span class="o">=</span><span class="m">1</span><span class="p">&amp;</span><span class="nv">limit</span><span class="o">=</span><span class="m">5</span><span class="p">&amp;</span><span class="nv">category</span><span class="o">=</span>Velas
+</pre></div>
+</div>
+<p><strong>Exemplo de Resposta (200 OK):</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prod_001&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;nome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Vela Aromática Lavanda&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;descricao&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Vela artesanal com aroma de lavanda...&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;preco&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.90</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;categoria&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Velas&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;imagem&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/images/vela-lavanda.jpg&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;disponivel&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;page&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;totalPages&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
-<section id="ideias-chave-dessa-estrutura">
-<h2>Ideias-chave dessa estrutura:<a class="headerlink" href="#ideias-chave-dessa-estrutura" title="Link to this heading">¶</a></h2>
-<p>Cada módulo de domínio (auth, sync, etc.) agrupa seu próprio http/, services/, repositories/ etc.</p>
-<p>A infra concentra detalhes tecnológicos (Express, ORM, Redis, HTTP client).</p>
-<p>A camada de domínio (services, regras) não “conhece” detalhes de infraestrutura, apenas interfaces (repos, clients).</p>
+<hr class="docutils" />
+<section id="listar-categorias">
+<h3>2. Listar Categorias<a class="headerlink" href="#listar-categorias" title="Link to this heading">¶</a></h3>
+<p>Retorna todas as categorias únicas disponíveis no catálogo.</p>
+<p><strong>Rota:</strong> <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/categories</span></code></p>
+<p><strong>Exemplo de Resposta (200 OK):</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+<span class="w">  </span><span class="s2">&quot;Velas&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;Incensos&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;Decoração&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;Acessórios&quot;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="health-check">
+<h3>3. Health Check<a class="headerlink" href="#health-check" title="Link to this heading">¶</a></h3>
+<p>Verifica se a API está online.</p>
+<p><strong>Rota:</strong> <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/</span></code></p>
+<p><strong>Exemplo de Resposta (200 OK):</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2023-10-27T10:00:00.000Z&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="estrutura-de-dados">
+<h2>🧩 Estrutura de Dados<a class="headerlink" href="#estrutura-de-dados" title="Link to this heading">¶</a></h2>
+<p>Abaixo está a estrutura dos objetos retornados pela API.</p>
+<pre  class="mermaid">
+        classDiagram
+    class RespostaAPI {
+        +Produto[] data
+        +MetaPagination meta
+    }
+
+    class Produto {
+        +String id
+        +String nome
+        +String descricao
+        +Number preco
+        +String categoria
+        +String imagem
+        +Boolean disponivel
+    }
+
+    class MetaPagination {
+        +Number page
+        +Number limit
+        +Number total
+        +Number totalPages
+    }
+
+    RespostaAPI *-- Produto : contem lista
+    RespostaAPI *-- MetaPagination : contem info
+    </pre></section>
+<section id="configuracao-e-execucao">
+<h2>🛠️ Configuração e Execução<a class="headerlink" href="#configuracao-e-execucao" title="Link to this heading">¶</a></h2>
+<p>Para rodar a API localmente:</p>
+<ol class="arabic">
+<li><p>Certifique-se de que o arquivo de dados existe em <code class="docutils literal notranslate"><span class="pre">src/data/produtos_atualizado.json</span></code>.</p></li>
+<li><p>Instale as dependências:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm<span class="w"> </span>install
+</pre></div>
+</div>
+</li>
+<li><p>Inicie o servidor em modo de desenvolvimento:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>dev
+</pre></div>
+</div>
+</li>
+</ol>
 </section>
 </section>
 
@@ -423,23 +425,15 @@ httpClient.ts       # wrapper HTTP (axios/fetch) comum
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="05-backend-api-interna.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">5. Integração do Back-End com a API Interna</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="03-estrutura-do-frontend.html">
+          
+          <a class="prev-page" href="index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">3. Estrutura do Front-End</div>
+                <div class="title">Home</div>
                 
               </div>
             </a>
@@ -473,14 +467,17 @@ httpClient.ts       # wrapper HTTP (axios/fetch) comum
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">4. Estrutura do Back-End</a><ul>
-<li><a class="reference internal" href="#explicacao-nao-tecnica">6.1 Explicação não técnica</a></li>
-<li><a class="reference internal" href="#logica-de-funcionamento-do-back-end">6.2 Lógica de Funcionamento do Back-End</a></li>
-<li><a class="reference internal" href="#arquitetura-interna-e-servicos-do-back-end">6.3 Arquitetura Interna e Serviços do Back-End</a></li>
-<li><a class="reference internal" href="#camada-de-dominio">Camada de Domínio</a></li>
-<li><a class="reference internal" href="#infraestrutura">Infraestrutura</a></li>
-<li><a class="reference internal" href="#estrutura-de-codigo-do-back-end-exemplo">6.4 Estrutura de Código do Back-End (Exemplo)</a></li>
-<li><a class="reference internal" href="#ideias-chave-dessa-estrutura">Ideias-chave dessa estrutura:</a></li>
+<li><a class="reference internal" href="#">Documentação da API de Produtos - Benedictus</a><ul>
+<li><a class="reference internal" href="#visao-geral">🚀 Visão Geral</a></li>
+<li><a class="reference internal" href="#fluxo-de-dados">📊 Fluxo de Dados</a></li>
+<li><a class="reference internal" href="#endpoints">🔗 Endpoints</a><ul>
+<li><a class="reference internal" href="#listar-produtos">1. Listar Produtos</a></li>
+<li><a class="reference internal" href="#listar-categorias">2. Listar Categorias</a></li>
+<li><a class="reference internal" href="#health-check">3. Health Check</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#estrutura-de-dados">🧩 Estrutura de Dados</a></li>
+<li><a class="reference internal" href="#configuracao-e-execucao">🛠️ Configuração e Execução</a></li>
 </ul>
 </li>
 </ul>

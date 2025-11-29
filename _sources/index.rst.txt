@@ -7,8 +7,4 @@ Bem-vindo à documentação!
    :maxdepth: 2
    :caption: Conteúdo
 
-   01-introducao.md
-   02-arquitetura-geral.md
-   03-estrutura-do-frontend.md
-   04-estrutura-do-backend.md
-   05-backend-api-interna.md
+   doc.md

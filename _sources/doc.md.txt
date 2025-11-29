@@ -1,0 +1,173 @@
+
+# Documentação da API de Produtos - Benedictus
+
+Esta API fornece acesso aos dados de produtos do catálogo, permitindo listagem, filtragem por categoria, busca textual e paginação.
+
+## 🚀 Visão Geral
+
+- **Base URL**: `http://localhost:3333` (Padrão de desenvolvimento)
+- **Formato de Resposta**: JSON
+- **Autenticação**: Nenhuma (Pública)
+
+---
+
+## 📊 Fluxo de Dados
+
+O diagrama abaixo ilustra como a API processa uma requisição de busca de produtos.
+
+```{mermaid}
+sequenceDiagram
+    participant Cliente
+    participant API
+    participant SistemaArquivos as File System (JSON)
+
+    Note over Cliente, API: Exemplo: GET /products?page=1&category=Velas
+
+    Cliente->>API: Requisição HTTP GET
+    activate API
+
+    API->>SistemaArquivos: Ler produtos_atualizado.json
+    activate SistemaArquivos
+    SistemaArquivos-->>API: Retorna dados brutos
+    deactivate SistemaArquivos
+
+    API->>API: Normalizar dados
+
+    alt Possui Filtros?
+        API->>API: Filtrar por Categoria / Busca
+    end
+
+    API->>API: Calcular Paginação (skip/take)
+
+    API-->>Cliente: Retorna JSON { data, meta }
+    deactivate API
+```
+
+---
+
+## 🔗 Endpoints
+
+### 1. Listar Produtos
+Retorna uma lista paginada de produtos.
+
+**Rota:** `GET /products`
+
+**Parâmetros de Consulta (Query Params):**
+
+| Parâmetro  | Tipo     | Padrão | Descrição |
+|:-----------|:---------|:-------|:----------|
+| `page`     | `number` | `1`    | Número da página atual. |
+| `limit`    | `number` | `10`   | Quantidade de itens por página. |
+| `category` | `string` | -      | Filtra produtos por categoria exata. |
+| `search`   | `string` | -      | Busca textual no nome ou descrição. |
+
+**Exemplo de Requisição:**
+
+```bash
+GET /products?page=1&limit=5&category=Velas
+```
+
+**Exemplo de Resposta (200 OK):**
+```json
+{
+  "data": [
+    {
+      "id": "prod_001",
+      "nome": "Vela Aromática Lavanda",
+      "descricao": "Vela artesanal com aroma de lavanda...",
+      "preco": 45.90,
+      "categoria": "Velas",
+      "imagem": "/images/vela-lavanda.jpg",
+      "disponivel": true
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 5,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+### 2. Listar Categorias
+Retorna todas as categorias únicas disponíveis no catálogo.
+
+**Rota:** `GET /categories`
+
+**Exemplo de Resposta (200 OK):**
+```json
+[
+  "Velas",
+  "Incensos",
+  "Decoração",
+  "Acessórios"
+]
+```
+
+---
+
+### 3. Health Check
+Verifica se a API está online.
+
+**Rota:** `GET /`
+
+**Exemplo de Resposta (200 OK):**
+```json
+{
+  "status": "ok",
+  "timestamp": "2023-10-27T10:00:00.000Z"
+}
+```
+
+---
+
+## 🧩 Estrutura de Dados
+
+Abaixo está a estrutura dos objetos retornados pela API.
+
+```{mermaid}
+classDiagram
+    class RespostaAPI {
+        +Produto[] data
+        +MetaPagination meta
+    }
+
+    class Produto {
+        +String id
+        +String nome
+        +String descricao
+        +Number preco
+        +String categoria
+        +String imagem
+        +Boolean disponivel
+    }
+
+    class MetaPagination {
+        +Number page
+        +Number limit
+        +Number total
+        +Number totalPages
+    }
+
+    RespostaAPI *-- Produto : contem lista
+    RespostaAPI *-- MetaPagination : contem info
+```
+
+## 🛠️ Configuração e Execução
+
+Para rodar a API localmente:
+
+1. Certifique-se de que o arquivo de dados existe em `src/data/produtos_atualizado.json`.
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Inicie o servidor em modo de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+
+
